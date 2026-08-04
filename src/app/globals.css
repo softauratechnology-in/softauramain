@@ -1,0 +1,310 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens.
+   Mirrors `src/styles/colors.ts`, `typography.ts` and `theme.ts`. Change a
+   value in one place and it must be changed in the other — the TS files exist
+   for JS consumers (three.js, canvas), this block for Tailwind utilities.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* Brand */
+  --brand-300: #a3a8ff;
+  --brand-400: #817fff;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+
+  /* Secondary + accent */
+  --secondary-400: #c084fc;
+  --secondary-500: #a855f7;
+  --accent-300: #67e8f9;
+  --accent-400: #22d3ee;
+
+  /* Feedback */
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #fb7185;
+
+  /* Fluid type scale (see styles/typography.ts) */
+  --text-display: clamp(2.75rem, 7vw, 6rem);
+  --text-h2: clamp(2rem, 4.5vw, 3.75rem);
+  --text-h3: clamp(1.375rem, 2vw, 1.875rem);
+  --text-h4: clamp(1.125rem, 1.4vw, 1.375rem);
+  --text-lead: clamp(1.0625rem, 1.4vw, 1.25rem);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 200ms;
+  --duration-base: 350ms;
+
+  /* Layout */
+  --nav-height: 4.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme presets — the canvas layer.
+
+   Mirrors `src/styles/themes.ts`; edit both or neither. Each block sets only
+   the eight semantic neutrals, so brand colours are untouched by a swap.
+
+   The active preset is written onto `<html data-theme="…">` by `layout.tsx`
+   (server-rendered — no flash). Because these are plain custom properties,
+   any subtree can override the page: `<section data-theme="slate">`.
+--------------------------------------------------------------------------- */
+
+/* Fallback for a document with no `data-theme` — same values as `midnight`. */
+:root,
+[data-theme="midnight"] {
+  --background: #080b18;
+  --surface: #0e1326;
+  --surface-hover: #141a33;
+  --border: #1e2541;
+  --border-strong: #2c355a;
+  --foreground: #f2f4fb;
+  --muted: #b6bcd4;
+  --subtle: #8891ad;
+}
+
+[data-theme="ink"] {
+  --background: #07070b;
+  --surface: #0d0d14;
+  --surface-hover: #12121c;
+  --border: #1c1c28;
+  --border-strong: #2a2a3a;
+  --foreground: #f7f7fb;
+  --muted: #b4b4c7;
+  --subtle: #8b8ba3;
+}
+
+[data-theme="slate"] {
+  --background: #12151c;
+  --surface: #1a1f29;
+  --surface-hover: #212734;
+  --border: #2b323f;
+  --border-strong: #3b4453;
+  --foreground: #f4f6f9;
+  --muted: #bcc3ce;
+  --subtle: #8e97a5;
+}
+
+[data-theme="plum"] {
+  --background: #100b18;
+  --surface: #181025;
+  --surface-hover: #1f1630;
+  --border: #2b1f42;
+  --border-strong: #3c2c5c;
+  --foreground: #f6f2fb;
+  --muted: #c2b7d4;
+  --subtle: #968aad;
+}
+
+[data-theme="sand"] {
+  --background: #f2efe9;
+  --surface: #faf8f4;
+  --surface-hover: #efebe2;
+  --border: #ded8cc;
+  --border-strong: #c5bdad;
+  --foreground: #171420;
+  --muted: #4a4557;
+  --subtle: #6d6779;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border-subtle: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+
+  --color-brand: var(--brand-500);
+  --color-brand-strong: var(--brand-600);
+  --color-brand-soft: var(--brand-300);
+  --color-secondary: var(--secondary-500);
+  --color-accent: var(--accent-400);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-syne);
+
+  --radius-card: 1.25rem;
+
+  /* Exposed as `ease-out-expo` / `ease-in-out-expo` utilities. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-expo: cubic-bezier(0.83, 0, 0.17, 1);
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-gradient: gradient-pan 8s ease infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Animated gradient fill for headline accents and CTA surfaces. */
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    /* Native smooth scroll: the browser runs it off the main thread and only for
+       programmatic/anchor jumps — wheel and trackpad keep their real 1:1 feel.
+       No scroll-hijacking library involved. */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    /* Prevents a 3D canvas or marquee from creating a horizontal scrollbar. */
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-syne), var(--font-geist-sans), sans-serif;
+  }
+
+  /* Every in-page anchor destination. */
+  section[id],
+  [data-anchor] {
+    scroll-margin-top: calc(var(--nav-height) + 1.5rem);
+  }
+
+  ::selection {
+    background: var(--brand-600);
+    color: var(--foreground);
+  }
+
+  /* Visible, on-brand focus ring — never remove without a replacement. */
+  :focus-visible {
+    outline: 2px solid var(--brand-400);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utilities
+--------------------------------------------------------------------------- */
+
+@layer utilities {
+  /* Brand gradient as a text fill. */
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      135deg,
+      var(--brand-500) 0%,
+      var(--secondary-500) 50%,
+      var(--accent-400) 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-gradient);
+  }
+
+  /* Radial brand bloom, for hero and CTA backdrops. */
+  .bg-brand-glow {
+    background-image: radial-gradient(
+      60% 60% at 50% 40%,
+      color-mix(in oklab, var(--brand-600) 22%, transparent) 0%,
+      transparent 70%
+    );
+  }
+
+  /* Translucent card/panel surface. Tinted from `--foreground` rather than a
+     hard-coded white, so it stays correct on every theme preset — including a
+     light one, where a white veil would be invisible. */
+  .surface-glass {
+    border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+    background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
+  }
+
+  /* Hairline ring in the same theme-aware ink. `-soft` is the fainter step. */
+  .ring-hairline {
+    border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  }
+
+  .ring-hairline-soft {
+    border: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
+  }
+
+  /* 1px hairline that fades out at both ends. */
+  .divider-fade {
+    height: 1px;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--border-strong),
+      transparent
+    );
+  }
+
+  /* Faint grid, used behind the technology and process sections. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(70% 60% at 50% 40%, #000 0%, transparent 100%);
+  }
+
+  /* Gradient border via double background — avoids a wrapper element. */
+  .border-gradient {
+    border: 1px solid transparent;
+    background-image:
+      linear-gradient(var(--surface), var(--surface)),
+      linear-gradient(135deg, var(--brand-500), var(--secondary-500));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+}
