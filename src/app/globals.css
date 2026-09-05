@@ -18,6 +18,9 @@
   /* Secondary + accent */
   --secondary-400: #c084fc;
   --secondary-500: #a855f7;
+  /* Darker violet — the end stop of the primary button gradient. Chosen because
+     white text clears AA against it, which `--secondary-500` does not. */
+  --secondary-600: #9333ea;
   --accent-300: #67e8f9;
   --accent-400: #22d3ee;
 
@@ -110,6 +113,61 @@
   --subtle: #6d6779;
 }
 
+/* ---------------------------------------------------------------------------
+   Derived surface treatments.
+
+   Computed from whichever preset is active rather than hard-coded, so a theme
+   swap carries glass, glow and shadow with it. The dark presets all share one
+   formula — tint the canvas with its own ink — and because `--foreground` is
+   redeclared per preset, the `color-mix` re-evaluates for each automatically.
+
+   The light preset is the one that needs different arithmetic: frost over a
+   light canvas is *white* translucency, not ink, and a dark-canvas drop shadow
+   turns to mud on off-white. It overrides the four values below.
+--------------------------------------------------------------------------- */
+
+:root {
+  --glass-tint: color-mix(in oklab, var(--foreground) 6%, transparent);
+  --glass-border: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --glass-blur: 20px;
+
+  /* Hover lift for interactive cards. */
+  --shadow-card-hover: 0 20px 40px -12px rgb(0 0 0 / 0.6);
+
+  /* How hard the radial brand bloom reads against the canvas. */
+  --glow-strength: 22%;
+
+  /* Stops for `.text-gradient-brand`. Cyan holds up on a dark canvas. */
+  --gradient-brand-from: var(--brand-500);
+  --gradient-brand-via: var(--secondary-500);
+  --gradient-brand-to: var(--accent-400);
+
+  /* The quiet brand tone — card icons, tags, inline links. On a dark canvas
+     that means stepping *up* the ramp into pale indigo. */
+  --brand-soft: var(--brand-300);
+}
+
+[data-theme="sand"] {
+  --glass-tint: rgb(255 255 255 / 0.66);
+  --glass-border: color-mix(in oklab, var(--foreground) 8%, transparent);
+  --glass-blur: 18px;
+
+  /* Warm near-black at low alpha — a neutral black shadow greys the sand out. */
+  --shadow-card-hover: 0 18px 40px -16px rgb(23 20 32 / 0.18);
+
+  --glow-strength: 13%;
+
+  /* Cyan on off-white fails contrast, so the light ramp stays in the
+     indigo/violet range and returns to indigo rather than running pale. */
+  --gradient-brand-from: var(--brand-600);
+  --gradient-brand-via: var(--secondary-500);
+  --gradient-brand-to: var(--brand-500);
+
+  /* On off-white the ramp has to run the other way: pale indigo would sit at
+     roughly 2:1 against the canvas, so the quiet tone is a *darker* indigo. */
+  --brand-soft: var(--brand-600);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -122,7 +180,7 @@
 
   --color-brand: var(--brand-500);
   --color-brand-strong: var(--brand-600);
-  --color-brand-soft: var(--brand-300);
+  --color-brand-soft: var(--brand-soft);
   --color-secondary: var(--secondary-500);
   --color-accent: var(--accent-400);
   --color-success: var(--success);
@@ -183,6 +241,11 @@
        programmatic/anchor jumps — wheel and trackpad keep their real 1:1 feel.
        No scroll-hijacking library involved. */
     scroll-behavior: smooth;
+
+    /* Lets a transition animate to and from `auto` — required by the FAQ
+       accordion's `::details-content` height transition. Ignored where
+       unsupported, which only costs that animation. */
+    interpolate-size: allow-keywords;
   }
 
   body {
@@ -208,9 +271,11 @@
     scroll-margin-top: calc(var(--nav-height) + 1.5rem);
   }
 
+  /* White, not `--foreground`: on the light preset the foreground is near-black,
+     which against brand indigo is unreadable. */
   ::selection {
     background: var(--brand-600);
-    color: var(--foreground);
+    color: #fff;
   }
 
   /* Visible, on-brand focus ring — never remove without a replacement. */
@@ -237,13 +302,14 @@
 --------------------------------------------------------------------------- */
 
 @layer utilities {
-  /* Brand gradient as a text fill. */
+  /* Brand gradient as a text fill. Stops come from the active preset so the
+     ramp never runs paler than the canvas it is read against. */
   .text-gradient-brand {
     background-image: linear-gradient(
       135deg,
-      var(--brand-500) 0%,
-      var(--secondary-500) 50%,
-      var(--accent-400) 100%
+      var(--gradient-brand-from) 0%,
+      var(--gradient-brand-via) 50%,
+      var(--gradient-brand-to) 100%
     );
     background-size: 200% 200%;
     -webkit-background-clip: text;
@@ -252,21 +318,41 @@
     animation: var(--animate-gradient);
   }
 
-  /* Radial brand bloom, for hero and CTA backdrops. */
+  /* Radial brand bloom, for hero and CTA backdrops. Strength is per-preset —
+     the same 22% that reads as a soft glow on near-black is a dirty wash on
+     off-white. */
   .bg-brand-glow {
     background-image: radial-gradient(
       60% 60% at 50% 40%,
-      color-mix(in oklab, var(--brand-600) 22%, transparent) 0%,
+      color-mix(in oklab, var(--brand-600) var(--glow-strength), transparent) 0%,
       transparent 70%
     );
   }
 
-  /* Translucent card/panel surface. Tinted from `--foreground` rather than a
-     hard-coded white, so it stays correct on every theme preset — including a
-     light one, where a white veil would be invisible. */
+  /* Translucent card/panel surface. Both values come from the active preset
+     (see the derived-tokens block above) rather than a hard-coded white, so the
+     frost stays correct on a dark *and* a light canvas.
+
+     `backdrop-filter` is deliberately not set here — the `Card` glass variant
+     pairs this with a Tailwind blur utility plus a `@supports` fallback, so a
+     browser without backdrop-filter gets an opaque surface instead of an
+     unreadable transparent one. */
   .surface-glass {
-    border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
-    background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
+    border: 1px solid var(--glass-border);
+    background-color: var(--glass-tint);
+  }
+
+  /* Heavier frost, for chrome that must stay legible over arbitrary content —
+     the navbar and the mobile sheet. */
+  .surface-glass-strong {
+    border: 1px solid var(--glass-border);
+    background-color: color-mix(in oklab, var(--background) 45%, var(--glass-tint));
+  }
+
+  /* Barely-there frost for large decorative panels behind the hero copy. */
+  .surface-glass-subtle {
+    border: 1px solid color-mix(in oklab, var(--glass-border) 60%, transparent);
+    background-color: color-mix(in oklab, var(--glass-tint) 55%, transparent);
   }
 
   /* Hairline ring in the same theme-aware ink. `-soft` is the fainter step. */
@@ -296,6 +382,35 @@
       linear-gradient(to bottom, var(--border) 1px, transparent 1px);
     background-size: 64px 64px;
     mask-image: radial-gradient(70% 60% at 50% 40%, #000 0%, transparent 100%);
+  }
+
+  /*
+   * Animated `<details>` panel.
+   *
+   * The FAQ accordion is a native `<details>`/`<summary>`, which keeps it a
+   * Server Component, keyboard-accessible and functional with JavaScript
+   * disabled. The historic problem with that is animation: a closed `<details>`
+   * hides its content outright, so a height transition never gets to run.
+   *
+   * `::details-content` is the part that solves it — it targets the generated
+   * wrapper around everything after the `<summary>`. Animating to `auto` needs
+   * `interpolate-size: allow-keywords` (set on `:root` below), and
+   * `content-visibility` has to be transitioned with `allow-discrete` so the
+   * content stays rendered for the duration of the close.
+   *
+   * Where `::details-content` is not supported the panel simply opens and
+   * closes instantly — the disclosure still works, it just does not animate.
+   */
+  .accordion-panel::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size var(--duration-base) var(--ease-out-expo),
+      content-visibility var(--duration-base) var(--ease-out-expo) allow-discrete;
+  }
+
+  .accordion-panel[open]::details-content {
+    block-size: auto;
   }
 
   /* Gradient border via double background — avoids a wrapper element. */

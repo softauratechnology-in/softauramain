@@ -23,7 +23,7 @@ const variants = {
   /* Gradient border via layered backgrounds — see `.border-gradient` in globals.css. */
   gradient: "border-gradient",
   glass:
-    "surface-glass backdrop-blur-xl supports-[not(backdrop-filter:blur(0))]:bg-surface",
+    "surface-glass backdrop-blur-[var(--glass-blur)] supports-[not(backdrop-filter:blur(0))]:bg-surface",
 } as const;
 
 /**
@@ -50,7 +50,7 @@ export function Card({
         variants[variant],
         padded && "p-6 sm:p-8",
         interactive &&
-          "group/card transition-[transform,border-color,box-shadow,background-color] duration-350 ease-out-expo hover:-translate-y-1 hover:border-border-strong hover:bg-surface-hover hover:shadow-[0_20px_40px_-12px_rgb(0_0_0/0.6)]",
+          "group/card transition-[transform,border-color,box-shadow,background-color] duration-350 ease-out-expo hover:-translate-y-1 hover:border-border-strong hover:bg-surface-hover hover:shadow-[var(--shadow-card-hover)]",
         className,
       )}
     >

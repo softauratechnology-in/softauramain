@@ -102,7 +102,7 @@ export const themePresets = {
 export type ThemeName = keyof typeof themePresets;
 
 /** The site-wide default. Change this one value to re-skin the whole site. */
-export const ACTIVE_THEME: ThemeName = "midnight";
+export const ACTIVE_THEME: ThemeName = "sand";
 
 export const activeTheme: ThemeTokens = themePresets[ACTIVE_THEME];
 

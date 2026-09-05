@@ -4,44 +4,45 @@ import { Button } from "@/components/ui/Button";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { projects } from "@/data/projects";
-import { SECTION_IDS, primaryCta } from "@/constants/navigation";
+import { SECTION_IDS, routes } from "@/constants/navigation";
 import { layout } from "@/styles/theme";
 
 /**
- * Case studies grid — the `/work` page.
+ * Work, on the home page — and the page's social proof.
  *
- * Renders nothing when `projects` is empty rather than showing an empty section:
- * a "Selected work" heading over blank space is worse than no section at all.
- *
- * The first card gets `priority` on its image: it is the only one likely to be
- * near the fold on a tall desktop viewport, and marking more than one defeats
- * the purpose by competing for the same early bandwidth.
+ * Deliberately real systems rather than testimonials: the testimonial data in
+ * `data/testimonials.ts` is flagged sample content (every author is literally
+ * "Sample Client"), and a fabricated quote undermines the "no bait-and-switch"
+ * argument the rest of the page is making. Shipped work is proof we can
+ * actually stand behind.
  */
-export function WorkSection() {
+export function WorkTeaser() {
   if (projects.length === 0) return null;
 
+  /* No tinted band here: `WhyUsSection` immediately above already carries one,
+     and two banded sections in a row read as a single long block. */
   return (
     <section id={SECTION_IDS.work} className={layout.sectionY}>
       <Container>
         <SectionHeading
           eyebrow="Selected work"
           title="Systems people use every day"
-          description="A few of the systems we have designed, built and handed over. Each one started with the same problem: something important was being held together by spreadsheets, paper and goodwill."
+          description="Each of these replaced something that was being held together by spreadsheets, paper and goodwill."
           action={
-            <Button href={primaryCta.href} variant="secondary" icon="arrowRight">
-              Talk about your project
+            <Button href={routes.work} variant="secondary" icon="arrowRight">
+              All case studies
             </Button>
           }
         />
 
         <RevealGroup className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          {projects.map((project, index) => (
+          {projects.map((project) => (
             <RevealItem
               key={project.id}
               variant="scaleIn"
               className={project.featured ? "lg:col-span-2" : undefined}
             >
-              <ProjectCard project={project} priority={index === 0} />
+              <ProjectCard project={project} />
             </RevealItem>
           ))}
         </RevealGroup>

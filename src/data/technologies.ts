@@ -16,64 +16,71 @@ export interface TechCategory {
 }
 
 /**
- * Technology stack, grouped by layer.
+ * Technology, grouped by what it is responsible for.
  *
- * Rendered as a four-up grid of category cards. Names are plain text rather than
- * vendor logos on purpose: third-party logos carry trademark usage terms, and a
- * wall of them reads as filler. Swap to logos only with the assets and
- * permission in hand.
+ * Two audiences read this section and they need different things, so the copy
+ * is split by field rather than watered down for both. `description` is the
+ * plain-English promise a non-technical buyer can evaluate — it is the card's
+ * visible subtitle. `note` is the detail behind each name, revealed on hover,
+ * and is allowed to be concrete because by then the reader has chosen to look.
+ * Even so, notes say what a thing *does for you*, not what category of software
+ * it belongs to.
+ *
+ * Names are plain text rather than vendor logos on purpose: third-party logos
+ * carry trademark usage terms, and a wall of them reads as filler. Swap to
+ * logos only with the assets and permission in hand.
  */
 export const techCategories: TechCategory[] = [
   {
     id: "frontend",
-    label: "Frontend",
-    description: "Interfaces that stay fast as the product grows.",
+    label: "What people see",
+    description: "Screens that stay fast as the system grows.",
     icon: "browser",
     items: [
-      { name: "React", note: "Component architecture and state" },
-      { name: "Next.js", note: "Server rendering, routing and caching" },
-      { name: "TypeScript", note: "Type safety across the whole codebase" },
-      { name: "Tailwind CSS", note: "Design-system-driven styling" },
-      { name: "React Three Fiber", note: "WebGL and 3D interfaces" },
+      { name: "React", note: "The screens themselves" },
+      { name: "Next.js", note: "Pages that load quickly and rank well" },
+      { name: "TypeScript", note: "Catches whole classes of bug before release" },
+      { name: "Tailwind CSS", note: "Keeps every screen visually consistent" },
+      { name: "Accessibility", note: "Usable with a keyboard and a screen reader" },
     ],
   },
   {
     id: "backend",
-    label: "Backend",
-    description: "APIs and services that hold up under load.",
+    label: "What does the work",
+    description: "The engine room — it holds up when everyone logs in at once.",
     icon: "server",
     items: [
-      { name: "Node.js", note: "High-throughput APIs and real-time services" },
-      { name: "Java", note: "Long-lived enterprise systems" },
-      { name: "Spring Boot", note: "Transactional business services" },
-      { name: "REST & GraphQL", note: "Typed, versioned API contracts" },
-      { name: "Python", note: "Data pipelines and AI workloads" },
+      { name: "Node.js", note: "Fast responses, and live updates where needed" },
+      { name: "Java", note: "For systems that need to run for a decade" },
+      { name: "Spring Boot", note: "Money and records handled correctly" },
+      { name: "REST & GraphQL", note: "How your apps and partners connect in" },
+      { name: "Python", note: "Reporting, data work and AI features" },
     ],
   },
   {
     id: "database",
-    label: "Data",
-    description: "Storage modelled around how you actually query it.",
+    label: "Where your data lives",
+    description: "Organised around the questions you will actually ask of it.",
     icon: "database",
     items: [
-      { name: "PostgreSQL", note: "Relational core with strong guarantees" },
-      { name: "MongoDB", note: "Flexible document and event storage" },
-      { name: "MySQL", note: "Established transactional workloads" },
-      { name: "Redis", note: "Caching, queues and sessions" },
-      { name: "Vector search", note: "Retrieval for AI features" },
+      { name: "PostgreSQL", note: "Records that stay correct under pressure" },
+      { name: "MongoDB", note: "For data whose shape changes over time" },
+      { name: "MySQL", note: "Well-proven, widely supported" },
+      { name: "Redis", note: "Keeps frequently used data instant" },
+      { name: "Vector search", note: "Lets AI features search your own content" },
     ],
   },
   {
     id: "cloud",
-    label: "Cloud & DevOps",
-    description: "Repeatable deployments and no surprise outages.",
+    label: "Where it runs",
+    description: "Updates that go out safely, and no surprise outages.",
     icon: "cloud",
     items: [
-      { name: "AWS", note: "Primary cloud platform" },
-      { name: "Docker", note: "Reproducible build and runtime images" },
-      { name: "CI/CD", note: "Automated test, build and release gates" },
-      { name: "Terraform", note: "Infrastructure as code" },
-      { name: "Observability", note: "Metrics, tracing and alerting" },
+      { name: "AWS", note: "Hosting, in the region you need it" },
+      { name: "Docker", note: "Runs the same everywhere, so releases hold no surprises" },
+      { name: "Automated testing", note: "Every change is checked before it ships" },
+      { name: "Terraform", note: "Your setup is written down, not remembered" },
+      { name: "Monitoring", note: "We hear about problems before your users call" },
     ],
   },
 ];

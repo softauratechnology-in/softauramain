@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Container } from "@/components/ui/Container";
 import { Wordmark } from "@/components/ui/Wordmark";
-import { primaryNav, primaryCta, SECTION_IDS } from "@/constants/navigation";
+import { primaryNav, primaryCta, routes } from "@/constants/navigation";
 import { useScrollLock } from "@/hooks/useScrollLock";
 import { useScrolledPast } from "@/hooks/useScrollPosition";
 import { transitions } from "@/animations/variants";
@@ -17,10 +18,11 @@ import { transitions } from "@/animations/variants";
  * Fixed navigation bar.
  *
  * Three behaviours:
- *  1. **Condense on scroll** — gains a background and border once the page has
- *     moved, so it is transparent over the hero and legible over content.
- *  2. **Active section** — the link matching the section currently in view is
- *     highlighted, driven by `IntersectionObserver` rather than scroll maths.
+ *  1. **Condense on scroll** — gains a frosted background and border once the
+ *     page has moved, so it is transparent over the home hero and legible over
+ *     content. Interior pages have no hero to sit over, so they start frosted.
+ *  2. **Active route** — driven by `usePathname()`. `/work/school-erp` marks
+ *     "Work" as current, which a strict equality check would miss.
  *  3. **Mobile sheet** — full-screen overlay, scroll-locked, closes on navigate
  *     and on `Escape`.
  */
@@ -28,9 +30,14 @@ import { transitions } from "@/animations/variants";
 /** Scroll distance, in px, before the bar takes on its solid treatment. */
 const CONDENSE_AT = 24;
 
+/** Current when the path *is* the route, or sits beneath it. */
+function isCurrent(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>(SECTION_IDS.hero);
+  const pathname = usePathname();
 
   useScrollLock(menuOpen);
 
@@ -38,34 +45,28 @@ export function Navbar() {
      when the threshold is actually crossed. */
   const condensed = useScrolledPast(CONDENSE_AT);
 
-  /* Active-section tracking. One observer over all nav targets. */
-  useEffect(() => {
-    const ids = primaryNav.map((item) => item.href.replace("#", ""));
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter((element): element is HTMLElement => element !== null);
+  /* Only the home page opens with a full-bleed hero behind the bar. Everywhere
+     else a transparent bar would float over body copy. */
+  const overHero = pathname === routes.home;
+  const solid = condensed || menuOpen || !overHero;
 
-    if (sections.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        /* Several sections can intersect at once; pick the one closest to the
-           top of the viewport, which is what a reader perceives as "current". */
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort(
-            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
-          )[0];
-        if (visible) setActiveSection(visible.target.id);
-      },
-      /* The band is the middle of the viewport, so a section becomes "active"
-         when it dominates the screen rather than when its edge appears. */
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
+  /*
+   * Close the sheet whenever the route changes.
+   *
+   * A route change can happen without a click on one of our own nav links —
+   * browser back/forward, or a link inside the sheet's own content — so this
+   * cannot live in an `onClick` alone.
+   *
+   * Adjusted during render rather than in an effect: React re-runs this
+   * component immediately with the corrected state and never commits the stale
+   * frame, so the sheet does not flash open on the new page. Doing it in an
+   * effect would paint the wrong state first and cause a cascading render.
+   */
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    setMenuOpen(false);
+  }
 
   /* Escape closes the mobile sheet. */
   useEffect(() => {
@@ -90,15 +91,16 @@ export function Navbar() {
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-350 ease-out-expo",
-          condensed || menuOpen
-            ? "border-b border-border-subtle bg-background/80 backdrop-blur-xl"
+          solid
+            ? "surface-glass-strong border-x-0 border-t-0 backdrop-blur-[var(--glass-blur)] supports-[not(backdrop-filter:blur(0))]:bg-background"
             : "border-b border-transparent bg-transparent",
         )}
       >
         <Container className="flex h-[var(--nav-height)] items-center justify-between gap-6">
           <Link
-            href={`#${SECTION_IDS.hero}`}
+            href={routes.home}
             data-cursor="hover"
+            aria-label="Softaura Technology — home"
             onClick={() => setMenuOpen(false)}
             className="text-foreground"
           >
@@ -109,13 +111,13 @@ export function Navbar() {
           <nav aria-label="Primary" className="hidden lg:block">
             <ul className="flex items-center gap-1">
               {primaryNav.map((item) => {
-                const isActive = activeSection === item.href.replace("#", "");
+                const isActive = isCurrent(pathname, item.href);
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       data-cursor="hover"
-                      aria-current={isActive ? "true" : undefined}
+                      aria-current={isActive ? "page" : undefined}
                       className={cn(
                         "relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200",
                         isActive

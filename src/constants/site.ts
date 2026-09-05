@@ -34,9 +34,9 @@ export const contact = {
   phones: [
     {
       label: "India",
-      display: "+91 73958 26226",
+      display: "+91 89400 66770",
       /** E.164, no punctuation — required by `tel:` and `wa.me`. */
-      e164: "917395826226",
+      e164: "918940066770",
     },
     {
       label: "UAE",

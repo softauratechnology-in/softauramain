@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
-   * Strict mode double-invokes effects in development. Kept on deliberately: it is
-   * exactly what surfaces the WebGL context and IntersectionObserver leaks the 3D
-   * hero would otherwise hide until production.
+   * Strict mode double-invokes effects in development. Kept on deliberately: it
+   * is what surfaces listener and observer leaks — the scroll, pointer and
+   * intersection subscriptions in `src/hooks` — before they reach production.
    */
   reactStrictMode: true,
 

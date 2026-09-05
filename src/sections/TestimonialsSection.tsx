@@ -2,7 +2,6 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { TestimonialCard } from "@/components/cards/TestimonialCard";
-import { Icon } from "@/components/ui/Icon";
 import {
   testimonials,
   TESTIMONIALS_ARE_PLACEHOLDER,
@@ -13,16 +12,22 @@ import { layout } from "@/styles/theme";
 /**
  * Testimonials.
  *
- * Two safeguards, both intentional:
+ * Three safeguards, all intentional:
  *  - Empty list → the section does not render. Set `testimonials = []` to launch
  *    without this section rather than shipping filler.
- *  - `TESTIMONIALS_ARE_PLACEHOLDER` → a visible notice is rendered above the
- *    quotes. Attributing invented praise to real clients on a live commercial site
- *    is a fabricated endorsement, so the placeholder state announces itself
- *    instead of hiding. Flip the flag once real quotes are in.
+ *  - `TESTIMONIALS_ARE_PLACEHOLDER` → the section does not render *at all*.
+ *    Attributing invented praise to clients on a live commercial site is a
+ *    fabricated endorsement, and this site argues for its own honesty
+ *    elsewhere; a page that says "no bait-and-switch" above three quotes from
+ *    "Sample Client" defeats itself. Real proof on the home page comes from
+ *    shipped work instead (`WorkTeaser`).
+ *
+ * Flip `TESTIMONIALS_ARE_PLACEHOLDER` to `false` once real, approved quotes are
+ * in `data/testimonials.ts`, and this section appears on its own.
  */
 export function TestimonialsSection() {
   if (testimonials.length === 0) return null;
+  if (TESTIMONIALS_ARE_PLACEHOLDER) return null;
 
   return (
     <section id={SECTION_IDS.testimonials} className={layout.sectionY}>
@@ -32,28 +37,6 @@ export function TestimonialsSection() {
           title="What partners say about working with us"
           align="center"
         />
-
-        {TESTIMONIALS_ARE_PLACEHOLDER ? (
-          <div
-            role="note"
-            className="mx-auto mb-10 flex max-w-2xl items-start gap-3 rounded-card border border-warning/30 bg-warning/[0.07] p-4 text-sm text-muted"
-          >
-            <Icon name="quote" size={18} className="mt-0.5 shrink-0 text-warning" />
-            <p>
-              <strong className="font-semibold text-foreground">
-                Sample content.
-              </strong>{" "}
-              These quotes are illustrative placeholders, not real client
-              endorsements. Replace them with approved testimonials and set{" "}
-              <code className="rounded bg-surface-hover px-1.5 py-0.5 text-xs">
-                TESTIMONIALS_ARE_PLACEHOLDER
-              </code>{" "}
-              to <code className="rounded bg-surface-hover px-1.5 py-0.5 text-xs">false</code>{" "}
-              in <code className="text-xs">src/data/testimonials.ts</code> before
-              launch.
-            </p>
-          </div>
-        ) : null}
 
         <RevealGroup className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (

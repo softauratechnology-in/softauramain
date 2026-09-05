@@ -10,8 +10,15 @@ export interface Service {
   deliverables: string[];
   icon: IconName;
   /**
-   * Marks the two or three services the company leads with. Featured cards
-   * span two grid columns and get the gradient border treatment.
+   * `primary` — the four things we want to be hired for. These lead the
+   * services page and are the only ones teased on the home page.
+   * `supporting` — real capabilities, but ones a buyer arrives needing *as part
+   * of* a primary engagement rather than on their own.
+   */
+  tier: "primary" | "supporting";
+  /**
+   * Marks the services the company leads with. Featured cards span two grid
+   * columns and get the gradient border treatment.
    */
   featured?: boolean;
 }
@@ -19,119 +26,155 @@ export interface Service {
 /**
  * Service catalogue — the commercial spine of the site.
  *
- * Copy is written from the buyer's point of view (outcome first, technology
- * second). Order is intentional: revenue-driving engagement types first,
- * retainer and support work last.
+ * Copy rule: a school administrator or a non-technical founder has to be able
+ * to read every line and know whether it applies to them. Outcome first, and
+ * where a technical term is genuinely load-bearing it is explained in the same
+ * breath rather than assumed ("one codebase, so features land on both at once"
+ * rather than "cross-platform"). Stack names live on the services page's "how
+ * we build" block, not here.
+ *
+ * Order is intentional: the four primary engagement types first, then the
+ * supporting work, retainer last.
  */
 export const services: Service[] = [
   {
     id: "saas-development",
-    title: "SaaS Product Development",
+    title: "SaaS Products",
     summary:
-      "End-to-end delivery of multi-tenant SaaS platforms — from the first architecture decision through to a billed, production product your customers can sign up for.",
+      "Software you sell by subscription — built so a customer can find you, sign up, pay and start using it without anyone on your team touching the process.",
     deliverables: [
-      "Multi-tenant architecture and tenant isolation",
-      "Subscription billing and metered usage",
-      "Role-based access control and admin tooling",
-      "Analytics, audit trails and usage reporting",
+      "Sign-up, subscriptions and recurring billing",
+      "Separate, private workspaces for every customer",
+      "Admin controls and permission levels for your team",
+      "Usage reporting, so you can see what people actually use",
     ],
     icon: "layers",
+    tier: "primary",
     featured: true,
   },
   {
-    id: "web-applications",
-    title: "Enterprise Web Applications",
+    id: "custom-erp",
+    title: "Custom ERP & Business Systems",
     summary:
-      "Business-critical web systems — ERP, CRM, operations dashboards and internal tooling — built to hold up under real workloads and real audit requirements.",
+      "One system that replaces the spreadsheets, paper files and WhatsApp threads your organisation currently runs on — built around how you already work, not the other way round.",
     deliverables: [
-      "Domain modelling and workflow design",
-      "Complex reporting and data grids",
-      "Third-party and legacy system integration",
-      "Single sign-on and permissions",
+      "Admissions, records, attendance, fees, inventory or orders",
+      "A different view for each role — staff, management, parents, customers",
+      "Reports and exports your team can run without asking us",
+      "Connects to the systems you already pay for",
     ],
     icon: "browser",
+    tier: "primary",
     featured: true,
   },
   {
     id: "mobile-apps",
-    title: "Mobile App Development",
+    title: "Mobile Apps",
     summary:
-      "Native and cross-platform apps that extend your product to the phone without splitting your roadmap in two.",
+      "iPhone and Android apps built from a single codebase, so a new feature reaches both at the same time instead of being budgeted twice.",
     deliverables: [
-      "iOS and Android from one codebase",
-      "Offline-first data synchronisation",
-      "Push notifications and deep linking",
-      "App Store and Play Store release management",
+      "One app, both app stores",
+      "Keeps working when the signal drops, syncs when it returns",
+      "Push notifications that reach the right people",
+      "We handle the App Store and Play Store submissions",
     ],
     icon: "device",
+    tier: "primary",
+  },
+  {
+    id: "ecommerce",
+    title: "E-Commerce",
+    summary:
+      "Online stores that are quick to browse, simple to check out of, and straightforward for your team to run once we hand them over.",
+    deliverables: [
+      "Product catalogue, cart and checkout",
+      "Payment and delivery options that suit your market",
+      "Stock, orders and customers in one place",
+      "Built to be found in search from day one",
+    ],
+    icon: "cart",
+    tier: "primary",
   },
   {
     id: "ui-ux-design",
-    title: "UI/UX & Product Design",
+    title: "Design & User Experience",
     summary:
-      "Interface design grounded in how your users actually work — validated with prototypes before a line of production code is written.",
+      "We design the screens and test them with real users before anything is built — changing a drawing is cheap, changing a finished system is not.",
     deliverables: [
-      "Discovery workshops and user journey mapping",
-      "Interactive prototypes for stakeholder sign-off",
-      "Design systems and component libraries",
-      "Accessibility review to WCAG 2.2 AA",
+      "Sessions with the people who will actually use it",
+      "A clickable version to try before development starts",
+      "A consistent look that carries across every screen",
+      "Checked against accessibility standards (WCAG 2.2 AA)",
     ],
     icon: "palette",
+    tier: "supporting",
   },
   {
     id: "cloud-solutions",
-    title: "Cloud Architecture",
+    title: "Hosting & Infrastructure",
     summary:
-      "Infrastructure sized to what you run today and ready for what you run next quarter — without a surprise bill at the end of the month.",
+      "Somewhere secure and reliable for your software to run — sized for today's usage, ready for next year's, and with no surprise bill at the end of the month.",
     deliverables: [
-      "AWS landing zone and network design",
-      "Containerised workloads and autoscaling",
-      "Cost modelling and rightsizing",
-      "Backup, failover and disaster recovery",
+      "Handles busy periods without falling over",
+      "Costs modelled up front, and reviewed as you grow",
+      "Backups, and a tested plan for when something fails",
+      "Private by default — your data stays yours",
     ],
     icon: "cloud",
+    tier: "supporting",
   },
   {
     id: "ai-integration",
-    title: "AI Integration",
+    title: "AI Features",
     summary:
-      "Practical AI inside your existing product — retrieval over your own data, document processing, assistive workflows — scoped to a measurable outcome, not a demo.",
+      "Practical AI inside the product you already have — searching your own documents, reading paperwork, drafting the repetitive parts. Scoped to a result you can measure, not a demo.",
     deliverables: [
-      "Retrieval-augmented search over private data",
-      "Document extraction and classification pipelines",
-      "LLM-assisted workflows with human review",
-      "Evaluation harnesses and guardrails",
+      "Ask-a-question search across your own files and records",
+      "Pulling data out of invoices, forms and documents",
+      "A person stays in the loop on anything that matters",
+      "Tested for accuracy before it goes anywhere near customers",
     ],
     icon: "sparkle",
-    featured: true,
+    tier: "supporting",
   },
   {
     id: "devops",
-    title: "DevOps & Deployment",
+    title: "Releases & Reliability",
     summary:
-      "The delivery pipeline that lets your team ship on a Friday afternoon: automated, observable and reversible.",
+      "Updates that go out safely, on a normal working day, and can be undone in minutes if something is wrong.",
     deliverables: [
-      "CI/CD pipelines with automated gates",
-      "Infrastructure as code",
-      "Monitoring, logging and alerting",
-      "Zero-downtime and blue-green releases",
+      "Every change tested automatically before it ships",
+      "Updates with no downtime for your users",
+      "We are alerted to problems before your customers call",
+      "Any release can be reversed quickly",
     ],
     icon: "pipeline",
+    tier: "supporting",
   },
   {
     id: "support",
-    title: "Maintenance & Support",
+    title: "Ongoing Support",
     summary:
-      "Long-term ownership under a clear SLA — dependency upgrades, security patching and a roadmap that keeps moving after launch.",
+      "Long-term ownership with agreed response times — security updates, improvements and a roadmap that keeps moving after launch.",
     deliverables: [
-      "Defined response and resolution targets",
-      "Security patching and dependency upgrades",
-      "Performance monitoring and tuning",
-      "Quarterly roadmap and health reviews",
+      "Agreed response times, in writing",
+      "Security updates applied as they are released",
+      "Performance watched and tuned over time",
+      "A quarterly review of what to build next",
     ],
-    icon: "shield",
+    icon: "lifebuoy",
+    tier: "supporting",
   },
 ];
 
-/** Featured subset, for use anywhere a condensed service list is needed. */
+/** The four engagement types the site leads with. */
+export const primaryServices = services.filter(
+  (service) => service.tier === "primary",
+);
+
+/** Everything else — real work, but sold as part of an engagement. */
+export const supportingServices = services.filter(
+  (service) => service.tier === "supporting",
+);
+
 export const featuredServices = services.filter((service) => service.featured);

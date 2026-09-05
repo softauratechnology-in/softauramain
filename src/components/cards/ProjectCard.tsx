@@ -1,10 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { text } from "@/styles/typography";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { TagList } from "@/components/ui/Tag";
 import { HoverVideo } from "@/components/ui/HoverVideo";
+import { caseStudyPath } from "@/constants/navigation";
 import type { Project } from "@/data/projects";
 
 export interface ProjectCardProps {
@@ -97,27 +99,37 @@ export function ProjectCard({
 
         <TagList tags={tags} max={4} className="mt-6" />
 
-        {project.url ? (
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noreferrer noopener"
+        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <Link
+            href={caseStudyPath(project.id)}
             data-cursor="hover"
-            className="mt-6 inline-flex items-center gap-2 self-start text-sm font-medium text-brand-soft transition-colors duration-200 hover:text-foreground"
+            /* The link text names the project rather than repeating "read more"
+               on every card — a screen-reader user listing the page's links
+               otherwise gets three identical entries. */
+            aria-label={`Read the ${project.title} case study`}
+            className="inline-flex items-center gap-2 text-sm font-medium text-brand-strong transition-colors duration-200 hover:text-foreground"
           >
-            View project
+            Read the case study
             <Icon
-              name="arrowUpRight"
+              name="arrowRight"
               size={16}
-              className="transition-transform duration-350 ease-out-expo group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
+              className="transition-transform duration-350 ease-out-expo group-hover/card:translate-x-0.5"
             />
-          </a>
-        ) : (
-          /* No public link — say so plainly rather than rendering a dead button. */
-          <p className="mt-6 text-xs tracking-wide text-subtle/70 uppercase">
-            Private engagement — details on request
-          </p>
-        )}
+          </Link>
+
+          {project.url ? (
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              data-cursor="hover"
+              className="inline-flex items-center gap-1.5 text-sm text-subtle transition-colors duration-200 hover:text-foreground"
+            >
+              Visit site
+              <Icon name="arrowUpRight" size={14} />
+            </a>
+          ) : null}
+        </div>
       </div>
     </Card>
   );

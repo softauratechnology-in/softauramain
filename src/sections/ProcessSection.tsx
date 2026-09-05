@@ -22,7 +22,7 @@ export function ProcessSection() {
         <SectionHeading
           eyebrow="How we work"
           title="Seven steps from idea to running software"
-          description="No black box. You know what happens next, what it costs and what you get at the end of every stage."
+          description="No black box. At every stage you know what is happening now, what happens next, and what you will have in your hands at the end of it."
         />
 
         <RevealGroup as="ol" stagger={0.1} className="mx-auto max-w-4xl">

@@ -1,10 +1,20 @@
 # Softaura Technology — Company Website
 
 Marketing and lead-generation site for Softaura Technology, a SaaS and enterprise
-product engineering company. Single-page composition with a WebGL hero, scroll
-motion throughout, and a server-validated contact form.
+product engineering company. Six statically-prerendered routes, an animated
+Motion hero, glassmorphism surfaces on a light canvas, an FAQ that emits
+`FAQPage` structured data, and a server-validated contact form.
 
 Built with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS v4.
+
+```
+/            Home       hero · services teaser · why us · work · CTA
+/services    Services   4 primary services · supporting · process · how we build
+/work        Work       case-study index
+/work/[slug] Detail     one page per case study, statically generated
+/faq         FAQ        native <details> accordion + FAQPage JSON-LD
+/contact     Contact    booking card + server-validated enquiry form
+```
 
 ---
 
@@ -46,97 +56,122 @@ Copy `.env.example` to `.env.local`. Both variables are documented in that file.
 ```
 softaura-portfolio-main/
 ├── public/
-│   └── case-studies/         Case-study artwork (placeholder SVGs — see below)
+│   ├── case-studies/         Case-study artwork (filenames don't match subjects —
+│   │                         see the note in src/data/projects.ts)
+│   └── google….html          Google Search Console verification file
 ├── src/
-│   ├── app/                  App Router: layout, page, template, error, sitemap, robots
+│   ├── app/                  App Router: layout, template, error, sitemap, robots
+│   │   ├── services/         /services
+│   │   ├── work/             /work and /work/[slug]
+│   │   ├── faq/              /faq
+│   │   ├── contact/          /contact
 │   │   ├── actions/          Server Actions (contact form)
 │   │   └── globals.css       Design tokens + base styles + custom utilities
-│   ├── animations/           GSAP setup, Framer Motion variants, parallax hook
+│   ├── animations/           GSAP setup, Motion variants, parallax hook
 │   ├── components/
 │   │   ├── cards/            Service, Project, Testimonial, Feature, Process, TechStack
-│   │   ├── layout/           Navbar, Footer, CustomCursor, SmoothScroll, MotionProvider
-│   │   ├── three/            HeroCanvas (capability gate) + HeroScene (WebGL)
-│   │   ├── ui/               Button, Card, Container, Icon, Field, Marquee, Reveal, Tag
+│   │   ├── hero/             HeroBackdrop (animated gradient + glass panels)
+│   │   ├── layout/           Navbar, Footer, PageHeader, MotionProvider, PageTransition
+│   │   ├── ui/               Button, Card, Accordion, AnimatedHeadline, Icon, Reveal, …
+│   │   ├── BookingEmbed.tsx
 │   │   └── ContactForm.tsx
-│   ├── constants/            Site/company config, navigation, contact-form contract
-│   ├── data/                 All page content — services, projects, tech, process, …
-│   ├── hooks/                useMediaQuery, useScrollLock
+│   ├── constants/            Site/company config, routes, contact-form contract
+│   ├── data/                 All page content — services, projects, faq, process, …
+│   ├── hooks/                useMediaQuery, useScrollLock, useScrollPosition
 │   ├── lib/                  cn, polymorphic tag helpers
 │   ├── sections/             One file per page section
-│   └── styles/               colors.ts, typography.ts, theme.ts (design system)
+│   └── styles/               colors.ts, typography.ts, themes.ts, theme.ts
 ├── .env.example
-├── information.md            Full technical + design documentation
 └── next.config.ts
 ```
 
 ### Where to change things
 
-| To change…                    | Edit                                                            |
-| ----------------------------- | --------------------------------------------------------------- |
-| Services, case studies, stack | `src/data/*.ts`                                                 |
-| Company name, email, phones   | `src/constants/site.ts`                                         |
-| Nav links, section anchors    | `src/constants/navigation.ts`                                   |
-| Brand colours                 | `src/styles/colors.ts` **and** the token block in `globals.css`  |
-| Type scale, spacing, motion   | `src/styles/typography.ts`, `src/styles/theme.ts`                |
-| Section order                 | `src/app/page.tsx`                                              |
+| To change…                     | Edit                                                            |
+| ------------------------------ | --------------------------------------------------------------- |
+| Services, case studies, FAQ    | `src/data/*.ts`                                                 |
+| Company name, email, phones    | `src/constants/site.ts`                                         |
+| Routes, nav links, anchors     | `src/constants/navigation.ts`                                   |
+| Light/dark canvas              | `ACTIVE_THEME` in `src/styles/themes.ts` (one line)              |
+| Brand colours                  | `src/styles/colors.ts` **and** the token block in `globals.css`  |
+| Glass, glow, shadows, gradients | The derived-token block in `globals.css`                        |
+| Type scale, spacing, motion    | `src/styles/typography.ts`, `src/styles/theme.ts`                |
+| Home page section order        | `src/app/page.tsx`                                              |
 
 > **Colour tokens are declared twice on purpose.** `globals.css` is what Tailwind
-> utilities compile against; `colors.ts` is for JavaScript consumers (three.js
-> materials and lights, `theme-color`). Change both, or they drift.
+> utilities compile against; `colors.ts` is for JavaScript consumers (`theme-color`,
+> and anything reading colours from JS). Change both, or they drift.
+
+> **Theme-dependent values are derived, not hard-coded.** Glass tint, card shadow,
+> glow strength, the headline gradient stops and the "quiet" brand tone all live in
+> a derived-token block in `globals.css` and are recomputed per preset. A colour that
+> only works on one canvas belongs there, not inline in a component.
 
 ---
 
 ## Architecture notes
 
-**Server Components by default.** Every section, card and UI primitive is a Server
-Component. Only five things opt into the client: the navbar, the custom cursor,
-smooth scroll, the reveal wrappers, and the contact form. `<Button>` in particular
-stays server-side — its hover states are pure CSS, and the magnetic cursor effect is
-opted into with a `data-magnetic` attribute that the global cursor picks up by
-selector.
+**Server Components by default.** Every section, card and most UI primitives are
+Server Components. Only five things opt into the client: the navbar, the reveal
+wrappers, the animated headline, the hero backdrop and the contact form.
+`<Button>` in particular stays server-side — every one of its states is pure CSS.
 
-**The 3D hero is gated, then lazy.** `HeroCanvas` probes device capability (cores,
-memory, viewport width, Save-Data, a real WebGL context) before deciding. Devices
-that fail the check render an animated CSS orb and **never download** the ~890 KB
-three.js chunk. When it does load, the render loop pauses via
-`IntersectionObserver` once the hero scrolls away — and the canvas stays mounted
-rather than being torn down and rebuilt on every pass.
+**The FAQ accordion is a native `<details>`.** Not a client component: the browser
+already gets keyboard interaction, `aria-expanded` and find-in-page right, for no
+JavaScript. It also means every answer is in the HTML whether open or closed, which
+is what lets search engines and AI assistants read them. The open/close animation
+uses `::details-content` (see `.accordion-panel` in `globals.css`) and degrades to
+an instant toggle where that is unsupported.
 
-**Two animation libraries, split by job.** Framer Motion drives declarative
-enter/reveal animation (`<Reveal>`, `<RevealGroup>`). GSAP drives imperative,
-scroll-linked work (parallax, the full-bleed showcase scrub, the cursor). Lenis is
-wired into GSAP's ticker in `SmoothScroll` so ScrollTrigger and smooth scroll share
-one clock — without that, scrub animations visibly lag the content.
+**The hero is CSS and Motion, not WebGL.** An earlier build ran a three.js hero
+behind a device-capability gate. It was replaced with `HeroBackdrop` — blurred
+gradient fields and frosted panels — which removes `three`, `@react-three/fiber`
+and `@react-three/drei` from the dependency tree entirely. Every animated property
+is `transform` or `opacity`; blur is applied once to elements that never animate
+their filter, because animating `filter: blur()` re-rasterises every frame.
+
+**Two animation libraries, split by job.** Motion (Framer) drives declarative
+enter/reveal animation (`<Reveal>`, `<RevealGroup>`, `<AnimatedHeadline>`). GSAP is
+registered for imperative, scroll-linked work via `useParallax`, though nothing
+currently uses it.
 
 **Reduced motion is handled centrally.** `MotionProvider` sets Framer's
 `reducedMotion: "user"`, GSAP effects are gated with `gsap.matchMedia`, and CSS
 animations are neutralised in `globals.css`. Individual components do not each
-re-check the preference.
+re-check the preference — so new Motion animation inherits the behaviour for free.
 
-**Accessibility.** Skip link, visible focus rings, `aria-current` on the active nav
-item, `aria-expanded` and `Escape` handling on the mobile sheet, real
+**Accessibility.** Skip link, visible focus rings, `aria-current="page"` on the
+active nav item, `aria-expanded` and `Escape` handling on the mobile sheet, real
 `<blockquote>`/`<figure>` for testimonials, and `aria-invalid`/`aria-describedby`
-wired automatically by `<Field>`. The 3D canvas is `aria-hidden` — the headline
-carries the meaning.
+wired automatically by `<Field>`. `<AnimatedHeadline>` splits text into one element
+per word for the stagger, so it carries the whole sentence as `aria-label` and hides
+the fragments — assistive tech reads one heading, not a word list.
 
 ---
 
 ## Before launch
 
-Three things ship deliberately unfinished, each marked with a `TODO` in code:
+Four things ship deliberately unfinished, each marked with a `TODO` in code:
 
-1. **Testimonials are sample content.** `src/data/testimonials.ts` holds
-   illustrative quotes with fictional attribution, and the section renders a visible
-   "sample content" notice. Replace with approved client quotes and set
-   `TESTIMONIALS_ARE_PLACEHOLDER = false`. To launch without the section, set
-   `testimonials = []` — it then renders nothing at all.
-2. **Case-study artwork is placeholder gradients** in `public/case-studies/`.
-   Replace with real screenshots. `stack` and `url` on each project in
-   `src/data/projects.ts` are also unset, pending confirmation.
-3. **Contact delivery is not wired up.** Set `CONTACT_WEBHOOK_URL`, or implement
-   `deliverEnquiry` in `src/app/actions/contact.ts` against your email provider. Add
-   rate limiting before the URL is public for long — the honeypot only stops naive
-   bots.
+1. **Contact delivery is not wired up.** Set `CONTACT_WEBHOOK_URL`, or implement
+   `deliverEnquiry` in `src/app/actions/contact.ts` against your email provider.
+   Until then an enquiry is validated, logged to the console and dropped — while the
+   sender still sees a success message. Add rate limiting before the URL is public
+   for long; the honeypot only stops naive bots. **This is the one that loses
+   business if forgotten.**
+2. **Testimonials are sample content.** `src/data/testimonials.ts` holds
+   illustrative quotes with fictional attribution (every author is "Sample Client"),
+   so `TestimonialsSection` renders **nothing at all** while
+   `TESTIMONIALS_ARE_PLACEHOLDER` is `true`. Replace with approved client quotes and
+   flip the flag; the section then appears on the home page on its own.
+3. **Case-study artwork.** The stills in `public/case-studies/` are frames from
+   screen recordings rather than clean product screenshots, and the filenames do not
+   match their subjects — read the artwork note at the bottom of
+   `src/data/projects.ts` before touching them. `stack` and `url` on each project are
+   also unset, pending confirmation.
+4. **Booking link.** `NEXT_PUBLIC_BOOKING_URL` is unset, so `<BookingEmbed>` falls
+   back to phone and WhatsApp. Set it to a Cal.com/Calendly link to turn the card
+   into a "pick a time" action.
 
 Also outstanding: social profile URLs in `src/constants/site.ts` (entries with a
 `null` href render nothing), and an Open Graph image — add
@@ -154,7 +189,8 @@ it up by convention.
    `CONTACT_WEBHOOK_URL` if delivery is configured. Set them for **Production**,
    **Preview** and **Development** separately — a preview deploy inheriting the
    production URL emits wrong canonical tags.
-3. Deploy. All four routes prerender as static, so the site is served from the CDN.
+3. Deploy. Every route prerenders as static — including each `/work/[slug]` case
+   study via `generateStaticParams` — so the whole site is served from the CDN.
 
 ### Any Node host
 
@@ -190,10 +226,8 @@ are inlined into the bundle, so supplying it only at runtime has no effect.
 
 ---
 
-## Documentation
+## Search Console
 
-`information.md` holds the full technical and design record: token values, component
-inventory, motion specification, content map and performance budget.
-# softaura-main-1
-# softauramain
-# softauramain
+`public/google2f715258837cad55.html` is the Google Search Console verification
+file. It is served verbatim at the site root by Next.js's static file handling.
+Do not rename, edit or delete it — verification fails and the property is dropped.

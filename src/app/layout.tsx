@@ -109,6 +109,11 @@ export default function RootLayout({
          * associate the brand, contact routes and service regions. Only facts that
          * are actually verified go in here.
          */}
+        {/*
+         * `.replace(/</g, "\\u003c")` below: `JSON.stringify` does not escape
+         * markup, so a `<` in any of this data would close the script tag early.
+         * The escape is what the Next.js JSON-LD guide prescribes.
+         */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -127,7 +132,7 @@ export default function RootLayout({
                 areaServed: phone.label,
                 availableLanguage: ["en"],
               })),
-            }),
+            }).replace(/</g, "\\u003c"),
           }}
         />
 

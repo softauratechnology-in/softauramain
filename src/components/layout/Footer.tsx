@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { Wordmark } from "@/components/ui/Wordmark";
-import { footerNav, primaryCta, SECTION_IDS } from "@/constants/navigation";
+import { footerNav, primaryCta, routes } from "@/constants/navigation";
 import {
   activeSocials,
   contact,
@@ -65,9 +65,7 @@ export function Footer() {
       {/* Sitemap + contact */}
       <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <Link
-            href={`#${SECTION_IDS.hero}`}
-          >
+          <Link href={routes.home} aria-label="Softaura Technology — home">
             <Wordmark size="md" />
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-subtle">

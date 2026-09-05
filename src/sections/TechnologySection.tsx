@@ -8,7 +8,12 @@ import { SECTION_IDS } from "@/constants/navigation";
 import { layout } from "@/styles/theme";
 
 /**
- * Technology stack.
+ * How we build.
+ *
+ * Framed as an answer to "will this hold up?" rather than as a stack list. Tool
+ * names still appear — a technical evaluator on the buying side will look for
+ * them, and their absence reads as evasion — but they are demoted to supporting
+ * detail behind a plain statement of what each layer is responsible for.
  *
  * The marquee below the grid is deliberately the quiet `label` size — a second
  * oversized ticker on the same page would compete with the services marquee for
@@ -22,9 +27,9 @@ export function TechnologySection() {
 
       <Container className={`relative ${layout.sectionY}`}>
         <SectionHeading
-          eyebrow="Our stack"
-          title="Proven technology, chosen per problem"
-          description="We are opinionated about engineering quality and flexible about tools. Here is what we reach for most, and what each layer is responsible for."
+          eyebrow="How we build"
+          title="Boring technology, chosen on purpose"
+          description="You should not have to evaluate our tools — that is our job. But if someone technical on your side wants to look, here is what we use and, more usefully, what each part is responsible for."
         />
 
         <RevealGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">

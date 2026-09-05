@@ -114,15 +114,6 @@ export const gradients = {
   hairline: `linear-gradient(90deg, transparent 0%, ${activeTheme.borderStrong} 50%, transparent 100%)`,
 } as const;
 
-/** Colours consumed by the WebGL hero scene (three.js needs plain hex). */
-export const scene = {
-  keyLight: brand[400],
-  rimLight: accent[400],
-  fillLight: secondary[500],
-  material: activeTheme.surfaceHover,
-  wireframe: brand[300],
-} as const;
-
 export const colors = {
   neutral,
   brand,
@@ -131,7 +122,6 @@ export const colors = {
   feedback,
   semantic,
   gradients,
-  scene,
 } as const;
 
 export type ColorSystem = typeof colors;

@@ -1,18 +1,39 @@
 /**
  * Navigation model.
  *
- * The home page is a single scrolling document, so nav items are hash targets.
- * Each `href` must match the `id` of a rendered section — `SECTION_IDS` is the
- * shared source of truth so a rename cannot silently break a link.
+ * The site is a multi-page app: nav items are real routes, and `usePathname()`
+ * in the navbar decides which one is current. `routes` is the single source of
+ * truth — never write a path as a string literal in a component, because a
+ * rename then has to be found by grep instead of by the type checker.
+ *
+ * Hash targets still exist, but only *within* a page (the services list on
+ * `/services`, the process block below it). Those live in `SECTION_IDS`.
  */
 
+export const routes = {
+  home: "/",
+  services: "/services",
+  work: "/work",
+  faq: "/faq",
+  contact: "/contact",
+} as const;
+
+export type Route = (typeof routes)[keyof typeof routes];
+
+/** Detail page for one case study. Keep path construction in one place. */
+export const caseStudyPath = (slug: string): string => `${routes.work}/${slug}`;
+
+/**
+ * In-page anchor targets. Each must match the `id` of a rendered section — a
+ * shared constant so a rename cannot silently break a link.
+ */
 export const SECTION_IDS = {
   hero: "home",
   services: "services",
   whyUs: "why-us",
-  technology: "technology",
   work: "work",
   process: "process",
+  technology: "how-we-build",
   testimonials: "testimonials",
   contact: "contact",
 } as const;
@@ -24,44 +45,43 @@ export interface NavItem {
   href: string;
 }
 
-/** Primary navbar links. Kept to five — more than that and the bar gets noisy. */
+/** Primary navbar links. Kept to four — more than that and the bar gets noisy. */
 export const primaryNav: NavItem[] = [
-  { label: "Services", href: `#${SECTION_IDS.services}` },
-  { label: "Technology", href: `#${SECTION_IDS.technology}` },
-  { label: "Work", href: `#${SECTION_IDS.work}` },
-  { label: "Process", href: `#${SECTION_IDS.process}` },
-  { label: "Contact", href: `#${SECTION_IDS.contact}` },
+  { label: "Services", href: routes.services },
+  { label: "Work", href: routes.work },
+  { label: "FAQ", href: routes.faq },
+  { label: "Contact", href: routes.contact },
 ];
 
-/** Footer sitemap column. Broader than the navbar. */
+/** Footer sitemap columns. Broader than the navbar. */
 export const footerNav: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Company",
     items: [
-      { label: "Why Softaura", href: `#${SECTION_IDS.whyUs}` },
-      { label: "Our Process", href: `#${SECTION_IDS.process}` },
-      { label: "Case Studies", href: `#${SECTION_IDS.work}` },
-      { label: "Testimonials", href: `#${SECTION_IDS.testimonials}` },
+      { label: "Case studies", href: routes.work },
+      { label: "How we work", href: `${routes.services}#${SECTION_IDS.process}` },
+      { label: "Common questions", href: routes.faq },
+      { label: "Start a project", href: routes.contact },
     ],
   },
   {
     heading: "Services",
     items: [
-      { label: "SaaS Development", href: `#${SECTION_IDS.services}` },
-      { label: "Web Applications", href: `#${SECTION_IDS.services}` },
-      { label: "Mobile Apps", href: `#${SECTION_IDS.services}` },
-      { label: "AI Integration", href: `#${SECTION_IDS.services}` },
+      { label: "SaaS products", href: `${routes.services}#saas-development` },
+      { label: "Custom ERP systems", href: `${routes.services}#custom-erp` },
+      { label: "Mobile apps", href: `${routes.services}#mobile-apps` },
+      { label: "Online stores", href: `${routes.services}#ecommerce` },
     ],
   },
 ];
 
 /** The single primary conversion action, reused by navbar, hero and footer. */
 export const primaryCta = {
-  label: "Book a discovery call",
-  href: `#${SECTION_IDS.contact}`,
+  label: "Book a free consultation",
+  href: routes.contact,
 } as const;
 
 export const secondaryCta = {
   label: "See our work",
-  href: `#${SECTION_IDS.work}`,
+  href: routes.work,
 } as const;

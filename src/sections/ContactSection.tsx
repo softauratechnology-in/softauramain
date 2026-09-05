@@ -21,15 +21,15 @@ export function ContactSection() {
   return (
     <section
       id={SECTION_IDS.contact}
-      className={cn(layout.sectionY, "relative overflow-hidden border-t border-border-subtle")}
+      className={cn(layout.sectionY, "relative overflow-hidden")}
     >
       <div aria-hidden className="bg-brand-glow absolute inset-x-0 top-0 h-[28rem]" />
 
       <Container className="relative">
         <SectionHeading
           eyebrow="Get in touch"
-          title="Tell us what you are building"
-          description={`Send us the shape of the problem and we will come back with an honest view on scope, timeline and cost — usually ${contact.responseTime}.`}
+          title="Tell us what you are trying to fix"
+          description={`Describe the problem in your own words — you do not need a specification. We will come back with an honest view on what it would take, ${contact.responseTime}.`}
         />
 
         <div className="grid gap-10 lg:grid-cols-5 lg:gap-14">
