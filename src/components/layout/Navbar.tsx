@@ -144,9 +144,16 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Button href={primaryCta.href} size="sm" className="hidden sm:inline-flex">
-              {primaryCta.label}
-            </Button>
+            {/* The responsive display lives on this wrapper, not on the Button.
+                `cn()` is a plain concatenator with no tailwind-merge, so a
+                `hidden` passed as className would sit alongside the Button's own
+                `inline-flex` rather than replacing it — and lose. Below `sm` the
+                CTA is reached through the mobile sheet, which carries its own. */}
+            <span className="hidden sm:block">
+              <Button href={primaryCta.href} size="sm">
+                {primaryCta.label}
+              </Button>
+            </span>
 
             <button
               type="button"
