@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import { text } from "@/styles/typography";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import { TagList } from "@/components/ui/Tag";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -51,33 +51,105 @@ export async function generateMetadata(
   };
 }
 
-/** One narrative block. Three of these carry the whole case study. */
-function Narrative({
-  heading,
+/**
+ * The three chapters every case study is told in.
+ *
+ * The scaffolding — heading, icon, standing description — is fixed here rather
+ * than per project, because it is our framing and not a claim about any client.
+ * Only the `points` come from the project data.
+ */
+const CHAPTERS = [
+  {
+    id: "problem",
+    heading: "The problem",
+    icon: "search",
+    lead: "What the business was dealing with before we started.",
+  },
+  {
+    id: "approach",
+    heading: "What we built",
+    icon: "blueprint",
+    lead: "The system we designed and delivered.",
+  },
+  {
+    id: "outcome",
+    heading: "What changed",
+    icon: "check",
+    lead: "How the work landed in day-to-day operation.",
+  },
+] as const satisfies readonly {
+  id: string;
+  heading: string;
+  icon: IconName;
+  lead: string;
+}[];
+
+/**
+ * One chapter of a case study.
+ *
+ * Each point gets its own panel rather than a bullet in a list. The content is
+ * identical — the words are the client-approved copy, unedited — but thirty
+ * consecutive full-sentence bullets in a single reading column is the shape of
+ * a report, and no amount of good writing rescues that shape. Discrete panels
+ * let a reader take one point at a time and leave when they have enough, which
+ * is how these pages are actually read.
+ *
+ * The heading column sticks on `lg`, so the reader always knows which of the
+ * three questions the panel beside them is answering.
+ */
+function Chapter({
+  chapter,
+  step,
   points,
 }: {
-  heading: string;
+  chapter: (typeof CHAPTERS)[number];
+  step: number;
   points: string[];
 }) {
   return (
-    <div>
-      <h2 className={cn(text.h3, "text-balance")}>{heading}</h2>
-      <RevealGroup as="ul" className="mt-6 space-y-4">
-        {points.map((point) => (
-          <RevealItem
-            as="li"
-            key={point}
-            className="flex gap-3.5 text-pretty text-muted"
-          >
-            <span
-              aria-hidden
-              className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
-            />
-            {point}
+    <section
+      id={chapter.id}
+      data-anchor
+      className="grid gap-8 lg:grid-cols-12 lg:gap-12"
+    >
+      <div className="lg:col-span-4">
+        <Reveal className="lg:sticky lg:top-[calc(var(--nav-height)+2.5rem)]">
+          <span className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border-subtle bg-surface text-brand-soft">
+            <Icon name={chapter.icon} size={20} />
+          </span>
+
+          <span className={cn(text.ordinal, "block text-subtle")}>
+            {String(step).padStart(2, "0")}
+          </span>
+          <h2 className={cn(text.h3, "mt-1 text-balance")}>{chapter.heading}</h2>
+          <p className="mt-3 text-sm text-subtle">{chapter.lead}</p>
+        </Reveal>
+      </div>
+
+      <RevealGroup
+        as="ul"
+        className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:col-span-8"
+      >
+        {points.map((point, index) => (
+          <RevealItem as="li" key={point} variant="scaleIn" className="flex">
+            <div className="surface-glass flex w-full flex-col rounded-card p-5 backdrop-blur-[var(--glass-blur)] transition-colors duration-350 ease-out-expo hover:bg-surface-hover supports-[not(backdrop-filter:blur(0))]:bg-surface sm:p-6">
+              <span
+                aria-hidden
+                className={cn(
+                  text.ordinal,
+                  "mb-3 text-brand-soft/70",
+                )}
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <p className="text-pretty text-sm leading-relaxed text-muted">
+                {point}
+              </p>
+            </div>
           </RevealItem>
         ))}
       </RevealGroup>
-    </div>
+    </section>
   );
 }
 
@@ -118,18 +190,37 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
           </div>
         </Reveal>
 
-        <dl className="mt-10 grid grid-cols-1 gap-8 border-y border-border-subtle py-8 sm:grid-cols-3">
-          <div>
-            <dt className={text.eyebrow}>Client</dt>
-            <dd className="mt-2 text-foreground">{project.client}</dd>
-          </div>
-          <div>
-            <dt className={text.eyebrow}>Type of work</dt>
-            <dd className="mt-2 text-foreground">{project.category}</dd>
-          </div>
-          <div>
-            <dt className={text.eyebrow}>Focus</dt>
-            <dd className="mt-2">
+        {/* Glass tiles rather than a bordered row. This strip is the first
+            thing under the hero image and sets the register for everything
+            below it — as three columns divided by rules it read as a table of
+            contents; as panels it reads as a summary card. */}
+        <dl className="mt-8 grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            { term: "Client", icon: "users", value: project.client },
+            { term: "Type of work", icon: "layers", value: project.category },
+          ].map((entry) => (
+            <div
+              key={entry.term}
+              className="surface-glass rounded-card p-5 backdrop-blur-[var(--glass-blur)] supports-[not(backdrop-filter:blur(0))]:bg-surface"
+            >
+              <dt className={cn(text.eyebrow, "flex items-center gap-2")}>
+                <Icon
+                  name={entry.icon as IconName}
+                  size={15}
+                  className="text-brand-soft"
+                />
+                {entry.term}
+              </dt>
+              <dd className="mt-2.5 font-medium text-foreground">{entry.value}</dd>
+            </div>
+          ))}
+
+          <div className="surface-glass rounded-card p-5 backdrop-blur-[var(--glass-blur)] supports-[not(backdrop-filter:blur(0))]:bg-surface">
+            <dt className={cn(text.eyebrow, "flex items-center gap-2")}>
+              <Icon name="sparkle" size={15} className="text-brand-soft" />
+              Focus
+            </dt>
+            <dd className="mt-2.5">
               <TagList tags={project.stack ?? project.tags} max={4} />
             </dd>
           </div>
@@ -137,19 +228,24 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
       </Container>
 
       <section className={layout.sectionY}>
-        {/* Left-aligned reading column rather than `width="prose"`, which
-            centres — the narrative has to line up with the page heading. */}
         <Container>
-          <div className="max-w-3xl space-y-16">
-            <Narrative heading="The problem" points={project.challenge} />
-            <Narrative heading="What we built" points={project.approach} />
-            <Narrative heading="What changed" points={project.outcome} />
+          <div className="flex flex-col gap-16 lg:gap-24">
+            {[project.challenge, project.approach, project.outcome].map(
+              (points, index) => (
+                <Chapter
+                  key={CHAPTERS[index].id}
+                  chapter={CHAPTERS[index]}
+                  step={index + 1}
+                  points={points}
+                />
+              ),
+            )}
           </div>
 
           {/* Said plainly rather than dressed up as a metric. The rest of the
               site argues that we do not invent numbers; this is where that
               claim is most tempting to break. */}
-          <p className="mt-14 max-w-3xl border-l-2 border-border-strong pl-5 text-sm text-subtle">
+          <p className="mt-16 max-w-3xl border-l-2 border-border-strong pl-5 text-sm text-subtle">
             We do not publish performance figures for client systems unless the
             client has measured them and agreed to us quoting them. If you would
             like to talk to a reference, ask and we will arrange it.

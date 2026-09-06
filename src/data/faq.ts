@@ -17,6 +17,8 @@
  * internal notes.
  */
 
+import type { IconName } from "@/components/ui/Icon";
+
 export interface FaqItem {
   /** Stable key, also the anchor fragment so a single answer can be linked. */
   id: string;
@@ -27,6 +29,10 @@ export interface FaqItem {
 export interface FaqGroup {
   id: string;
   heading: string;
+  /** Glyph for the category tiles above the accordion. */
+  icon: IconName;
+  /** One line describing what this group covers, shown on the tile. */
+  blurb: string;
   items: FaqItem[];
 }
 
@@ -34,6 +40,9 @@ export const faqGroups: FaqGroup[] = [
   {
     id: "choosing",
     heading: "Choosing what to build",
+    icon: "search",
+    blurb:
+      "Custom versus off-the-shelf, and what to do with what you already run.",
     items: [
       {
         id: "custom-erp-vs-off-the-shelf",
@@ -58,6 +67,9 @@ export const faqGroups: FaqGroup[] = [
   {
     id: "time-and-cost",
     heading: "Time and cost",
+    icon: "calendar",
+    blurb:
+      "How long a build takes, what it costs, and how we price it.",
     items: [
       {
         id: "how-long",
@@ -82,6 +94,9 @@ export const faqGroups: FaqGroup[] = [
   {
     id: "working-with-us",
     heading: "Working with us",
+    icon: "users",
+    blurb:
+      "Who writes the code, how involved you are, and what happens after launch.",
     items: [
       {
         id: "who-builds-it",
@@ -112,6 +127,9 @@ export const faqGroups: FaqGroup[] = [
   {
     id: "security-and-ownership",
     heading: "Security and ownership",
+    icon: "shield",
+    blurb:
+      "Where your data lives and who owns what we build.",
     items: [
       {
         id: "data-security",

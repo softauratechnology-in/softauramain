@@ -52,7 +52,6 @@ export function Footer() {
         <Reveal delay={0.1}>
           <Link
             href={primaryCta.href}
-            data-cursor="hover"
             className="flex h-44 w-44 items-center justify-center rounded-full border border-foreground/20 px-8 text-center font-display text-base font-bold tracking-tight transition-all duration-500 ease-out-expo hover:border-transparent hover:bg-foreground hover:text-background sm:h-52 sm:w-52 sm:text-lg"
           >
             Start a project
@@ -65,7 +64,7 @@ export function Footer() {
       {/* Sitemap + contact */}
       <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
-          <Link href={routes.home} aria-label="Softaura Technology — home">
+          <Link href={routes.home} aria-label={`${site.name} — home`}>
             <Wordmark size="md" />
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-subtle">
@@ -84,7 +83,6 @@ export function Footer() {
                 <li key={`${group.heading}-${item.label}`}>
                   <Link
                     href={item.href}
-                    data-cursor="hover"
                     className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
                   >
                     {item.label}
@@ -103,7 +101,6 @@ export function Footer() {
             <li>
               <a
                 href={`mailto:${contact.email}`}
-                data-cursor="hover"
                 className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
               >
                 <Icon name="mail" size={15} className="text-subtle" />
@@ -114,7 +111,6 @@ export function Footer() {
               <li key={phone.e164}>
                 <a
                   href={`tel:+${phone.e164}`}
-                  data-cursor="hover"
                   className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
                 >
                   <Icon name="phone" size={15} className="text-subtle" />
@@ -129,7 +125,6 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  data-cursor="hover"
                   className="text-muted transition-colors duration-200 hover:text-foreground"
                 >
                   {link.label}
@@ -157,7 +152,6 @@ export function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    data-cursor="hover"
                     className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
                   >
                     {social.label}

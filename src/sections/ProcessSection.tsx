@@ -7,10 +7,16 @@ import { SECTION_IDS } from "@/constants/navigation";
 import { layout } from "@/styles/theme";
 
 /**
- * Delivery process timeline.
+ * Delivery process.
  *
- * Staggered slightly slower than the card grids — a timeline reads top to bottom,
- * so a visible cascade reinforces the sequence rather than just decorating it.
+ * A vertical timeline below `lg`, a two-column card grid above it — see
+ * `ProcessStepCard`, which does both from one markup tree. The reveal follows:
+ * `slideInLeft` reinforces a top-to-bottom sequence but fights a grid, so the
+ * wide layout settles its cards in place instead.
+ *
+ * Staggered slightly slower than the other card grids — the order of these is
+ * the content, so a visible cascade reinforces the sequence rather than just
+ * decorating it.
  */
 export function ProcessSection() {
   return (
@@ -25,9 +31,18 @@ export function ProcessSection() {
           description="No black box. At every stage you know what is happening now, what happens next, and what you will have in your hands at the end of it."
         />
 
-        <RevealGroup as="ol" stagger={0.1} className="mx-auto max-w-4xl">
+        <RevealGroup
+          as="ol"
+          stagger={0.1}
+          className="mx-auto max-w-4xl lg:grid lg:max-w-none lg:auto-rows-fr lg:grid-cols-2 lg:gap-5"
+        >
           {processSteps.map((step, index) => (
-            <RevealItem key={step.id} as="li" variant="slideInLeft">
+            <RevealItem
+              key={step.id}
+              as="li"
+              variant="scaleIn"
+              className="lg:flex"
+            >
               <ProcessStepCard
                 step={step}
                 index={index}

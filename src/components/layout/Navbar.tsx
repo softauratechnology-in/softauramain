@@ -10,6 +10,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Container } from "@/components/ui/Container";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { primaryNav, primaryCta, routes } from "@/constants/navigation";
+import { site } from "@/constants/site";
 import { useScrollLock } from "@/hooks/useScrollLock";
 import { useScrolledPast } from "@/hooks/useScrollPosition";
 import { transitions } from "@/animations/variants";
@@ -92,15 +93,21 @@ export function Navbar() {
         className={cn(
           "fixed inset-x-0 top-0 z-40 transition-[background-color,border-color,backdrop-filter] duration-350 ease-out-expo",
           solid
-            ? "surface-glass-strong border-x-0 border-t-0 backdrop-blur-[var(--glass-blur)] supports-[not(backdrop-filter:blur(0))]:bg-background"
+            /* Opaque on a phone, frosted from `lg` up. The bar sits directly
+               over scrolling body copy on a narrow screen, where the desktop
+               frost's ~0.81 alpha leaves it legible straight through. */
+            ? "surface-glass-solid lg:surface-glass-strong border-x-0 border-t-0 backdrop-blur-[var(--glass-blur)] supports-[not(backdrop-filter:blur(0))]:bg-background"
             : "border-b border-transparent bg-transparent",
+          /* The glass utilities set a border on all four sides and only three
+             are zeroed above. With the sheet open the surviving bottom edge
+             draws a hairline straight across the overlay, so drop it too. */
+          solid && menuOpen && "border-b-0",
         )}
       >
         <Container className="flex h-[var(--nav-height)] items-center justify-between gap-6">
           <Link
             href={routes.home}
-            data-cursor="hover"
-            aria-label="Softaura Technology — home"
+            aria-label={`${site.name} — home`}
             onClick={() => setMenuOpen(false)}
             className="text-foreground"
           >
@@ -116,7 +123,6 @@ export function Navbar() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      data-cursor="hover"
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
                         "relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200",
@@ -161,7 +167,6 @@ export function Navbar() {
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
-              data-cursor="hover"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border-subtle text-foreground transition-colors duration-200 hover:border-border-strong lg:hidden"
             >
               <Icon name={menuOpen ? "close" : "menu"} size={20} />
@@ -179,7 +184,14 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={transitions.fast}
-            className="fixed inset-0 z-30 bg-background/97 pt-[var(--nav-height)] backdrop-blur-2xl lg:hidden"
+            /* Blur matches the header's `--glass-blur`. They previously differed
+               (18px here vs 40px from `backdrop-blur-2xl`), which drew a visible
+               seam along the bottom of the bar while the sheet was open.
+
+               `overflow-y-auto` because the sheet is a fixed-height box: four
+               items clear a 568px screen today, but a fifth would push the CTA
+               off the bottom with no way to reach it. */
+            className="fixed inset-0 z-30 overflow-y-auto overscroll-contain bg-background/97 pt-[var(--nav-height)] backdrop-blur-[var(--glass-blur)] lg:hidden"
           >
             <Container as="nav" aria-label="Mobile" className="py-8">
               <ul className="flex flex-col">

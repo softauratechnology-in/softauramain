@@ -1,5 +1,5 @@
 /**
- * The Softaura wordmark.
+ * The SoftAura wordmark.
  *
  * Single source of truth for the logo lockup — Navbar and Footer differ only in
  * size, so they pass `size` rather than re-declaring the type treatment. The
@@ -63,13 +63,15 @@ export function Wordmark({
     >
       <LogoMark />
 
+      {/* No trailing accent glyph. A period here previously rendered as a solid
+          violet square rather than punctuation: at `font-black` (a real weight
+          900, since Geist loads as a variable font) and `tracking-[-0.045em]`,
+          Geist's square-cut full stop sits flush against the final `a` and reads
+          as an artifact beside the name. The monogram is the brand accent. */}
       {markOnly ? (
         <span className="sr-only">{site.shortName}</span>
       ) : (
-        <span>
-          {site.shortName}
-          <span className="text-brand">.</span>
-        </span>
+        <span>{site.shortName}</span>
       )}
     </span>
   );

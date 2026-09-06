@@ -42,7 +42,6 @@ export function ContactSection() {
                   <li>
                     <a
                       href={`mailto:${contact.email}`}
-                      data-cursor="hover"
                       className="group/link flex items-start gap-3 text-base text-foreground transition-colors duration-200 hover:text-brand-soft"
                     >
                       <Icon name="mail" size={19} className="mt-0.5 text-brand" />
@@ -53,7 +52,6 @@ export function ContactSection() {
                     <li key={phone.e164}>
                       <a
                         href={`tel:+${phone.e164}`}
-                        data-cursor="hover"
                         className="flex items-start gap-3 text-base text-foreground transition-colors duration-200 hover:text-brand-soft"
                       >
                         <Icon name="phone" size={19} className="mt-0.5 text-brand" />
@@ -78,7 +76,6 @@ export function ContactSection() {
                         href={link.href}
                         target="_blank"
                         rel="noreferrer noopener"
-                        data-cursor="hover"
                         className="inline-flex items-center gap-2 text-sm text-muted transition-colors duration-200 hover:text-foreground"
                       >
                         {link.label}
@@ -107,7 +104,6 @@ export function ContactSection() {
                           href={social.href}
                           target="_blank"
                           rel="noreferrer noopener"
-                          data-cursor="hover"
                           className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
                         >
                           {social.label}

@@ -6,7 +6,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { AnimatedHeadline } from "@/components/ui/AnimatedHeadline";
 import { HeroBackdrop } from "@/components/hero/HeroBackdrop";
 import { SECTION_IDS, primaryCta, secondaryCta } from "@/constants/navigation";
-import { contact } from "@/constants/site";
+import { contact, site } from "@/constants/site";
 
 /**
  * Hero section.
@@ -24,12 +24,17 @@ export function HeroSection() {
       id={SECTION_IDS.hero}
       className="relative flex min-h-svh flex-col justify-center overflow-hidden pt-[var(--nav-height)]"
     >
-      <div aria-hidden className="bg-grid absolute inset-0 opacity-40" />
+      {/* The rule grid moved into `HeroBackdrop`, which animates it. */}
       <div aria-hidden className="bg-brand-glow absolute inset-0" />
 
       <HeroBackdrop />
 
-      <Container className="relative z-10 py-20">
+      {/* Vertical rhythm steps down on small screens. At the desktop `py-20`
+          the stack — eyebrow, four wrapped headline lines, a six-line lead, two
+          large buttons and a four-row qualification list — measured about
+          1030px against an 844px phone viewport, which put both CTAs below the
+          fold on a stock iPhone. */}
+      <Container className="relative z-10 py-12 sm:py-16 lg:py-20">
         <div className="max-w-4xl">
           <Reveal variant="fadeDown">
             <span className={cn(text.eyebrow, "inline-flex items-center gap-2.5")}>
@@ -43,7 +48,7 @@ export function HeroSection() {
 
           <AnimatedHeadline
             delay={0.08}
-            className={cn(grotesk.display, "mt-7 text-balance")}
+            className={cn(grotesk.display, "mt-5 text-balance sm:mt-7")}
             segments={[
               { text: "We build the software" },
               { text: "your business runs on", accent: true },
@@ -51,8 +56,8 @@ export function HeroSection() {
           />
 
           <Reveal delay={0.4}>
-            <p className={cn(text.lead, "mt-7 max-w-2xl text-pretty")}>
-              Softaura Technology designs and builds custom software — SaaS
+            <p className={cn(text.lead, "mt-5 max-w-2xl text-pretty sm:mt-7")}>
+              {site.name} designs and builds custom software — SaaS
               products, ERP systems for schools and growing companies, mobile
               apps and online stores. Senior engineers, honest timelines, and a
               system that still fits you in three years.
@@ -61,7 +66,7 @@ export function HeroSection() {
 
           <RevealGroup
             delay={0.5}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10 sm:gap-4"
           >
             <RevealItem>
               <Button href={primaryCta.href} size="lg" icon="arrowRight">
@@ -80,7 +85,7 @@ export function HeroSection() {
           <RevealGroup
             delay={0.6}
             as="ul"
-            className="mt-14 flex flex-wrap gap-x-8 gap-y-4 border-t border-border-subtle pt-8 text-sm text-subtle"
+            className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t border-border-subtle pt-6 text-sm text-subtle sm:mt-14 sm:gap-x-8 sm:gap-y-4 sm:pt-8"
           >
             {[
               "Senior engineers, no hand-offs",

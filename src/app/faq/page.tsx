@@ -4,7 +4,8 @@ import { text } from "@/styles/typography";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Accordion } from "@/components/ui/Accordion";
-import { Reveal } from "@/components/ui/Reveal";
+import { Icon } from "@/components/ui/Icon";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CtaSection } from "@/sections/CtaSection";
 import { faqGroups, faqItems } from "@/data/faq";
@@ -73,6 +74,41 @@ export default function FaqPage() {
             than `width="prose"` — that centres its column, which would leave
             the questions floating out of line with the page heading above. */}
         <Container>
+          {/* Category tiles. Thirteen questions in one column opens as a wall
+              of text with no way in; four tiles give the reader the shape of
+              the page and a jump straight to the part they came for. Anchor
+              links, so they work with JavaScript off and are shareable. */}
+          <RevealGroup className="mb-14 grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {faqGroups.map((group) => (
+              <RevealItem key={group.id} variant="scaleIn" className="flex">
+                <a
+                  href={`#${group.id}`}
+                  className="surface-glass group/tile flex w-full flex-col rounded-card p-5 backdrop-blur-[var(--glass-blur)] transition-colors duration-350 ease-out-expo hover:bg-surface-hover supports-[not(backdrop-filter:blur(0))]:bg-surface"
+                >
+                  <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border-subtle bg-surface text-brand-soft">
+                    <Icon name={group.icon} size={18} />
+                  </span>
+
+                  <span className="text-sm font-semibold text-foreground">
+                    {group.heading}
+                  </span>
+                  <span className="mt-1.5 text-xs leading-relaxed text-subtle">
+                    {group.blurb}
+                  </span>
+
+                  <span className="mt-4 flex items-center gap-1.5 text-xs font-medium text-brand-strong">
+                    {group.items.length} questions
+                    <Icon
+                      name="arrowRight"
+                      size={13}
+                      className="transition-transform duration-350 ease-out-expo group-hover/tile:translate-x-1"
+                    />
+                  </span>
+                </a>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+
           <div className="max-w-3xl space-y-16">
             {faqGroups.map((group, index) => (
               <div key={group.id} id={group.id} data-anchor>

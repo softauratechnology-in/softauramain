@@ -49,7 +49,6 @@ export function Accordion({
           className="accordion-panel group"
         >
           <summary
-            data-cursor="hover"
             className={cn(
               text.h4,
               /* `list-none` + the WebKit pseudo-element removes the native

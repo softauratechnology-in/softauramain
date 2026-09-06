@@ -4,6 +4,7 @@ import "./globals.css";
 import { MotionProvider } from "@/components/layout/MotionProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppWidget } from "@/components/WhatsAppWidget";
 import { site, contact } from "@/constants/site";
 import { semantic } from "@/styles/colors";
 import { ACTIVE_THEME, isLightTheme } from "@/styles/themes";
@@ -140,6 +141,8 @@ export default function RootLayout({
           <Navbar />
           {children}
           <Footer />
+          {/* Persistent across routes, so it lives here rather than per-page. */}
+          <WhatsAppWidget />
         </MotionProvider>
       </body>
     </html>

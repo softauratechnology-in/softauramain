@@ -1,6 +1,6 @@
-# Softaura Technology — Company Website
+# SoftAura Technology — Company Website
 
-Marketing and lead-generation site for Softaura Technology, a SaaS and enterprise
+Marketing and lead-generation site for SoftAura Technology, a SaaS and enterprise
 product engineering company. Six statically-prerendered routes, an animated
 Motion hero, glassmorphism surfaces on a light canvas, an FAQ that emits
 `FAQPage` structured data, and a server-validated contact form.
@@ -67,14 +67,15 @@ softaura-portfolio-main/
 │   │   ├── contact/          /contact
 │   │   ├── actions/          Server Actions (contact form)
 │   │   └── globals.css       Design tokens + base styles + custom utilities
-│   ├── animations/           GSAP setup, Motion variants, parallax hook
+│   ├── animations/           Motion variants and transitions
 │   ├── components/
-│   │   ├── cards/            Service, Project, Testimonial, Feature, Process, TechStack
+│   │   ├── cards/            Service, Project, Review, Testimonial, Feature, Process, TechStack
 │   │   ├── hero/             HeroBackdrop (animated gradient + glass panels)
 │   │   ├── layout/           Navbar, Footer, PageHeader, MotionProvider, PageTransition
-│   │   ├── ui/               Button, Card, Accordion, AnimatedHeadline, Icon, Reveal, …
+│   │   ├── ui/               Button, Ripple, Card, Accordion, CountUp, MarqueeRow, StarRating, Icon, …
 │   │   ├── BookingEmbed.tsx
-│   │   └── ContactForm.tsx
+│   │   ├── ContactForm.tsx
+│   │   └── WhatsAppWidget.tsx  Floating dual-region launcher (India / UAE)
 │   ├── constants/            Site/company config, routes, contact-form contract
 │   ├── data/                 All page content — services, projects, faq, process, …
 │   ├── hooks/                useMediaQuery, useScrollLock, useScrollPosition
@@ -97,6 +98,9 @@ softaura-portfolio-main/
 | Glass, glow, shadows, gradients | The derived-token block in `globals.css`                        |
 | Type scale, spacing, motion    | `src/styles/typography.ts`, `src/styles/theme.ts`                |
 | Home page section order        | `src/app/page.tsx`                                              |
+| WhatsApp offices               | `contact.phones` in `src/constants/site.ts` (widget derives both) |
+| Headline figures               | `src/data/stats.ts` — every value is computed, never typed      |
+| Client reviews                 | `src/data/reviews.ts` (gated; see "Before launch")             |
 
 > **Colour tokens are declared twice on purpose.** `globals.css` is what Tailwind
 > utilities compile against; `colors.ts` is for JavaScript consumers (`theme-color`,
@@ -130,15 +134,30 @@ and `@react-three/drei` from the dependency tree entirely. Every animated proper
 is `transform` or `opacity`; blur is applied once to elements that never animate
 their filter, because animating `filter: blur()` re-rasterises every frame.
 
-**Two animation libraries, split by job.** Motion (Framer) drives declarative
-enter/reveal animation (`<Reveal>`, `<RevealGroup>`, `<AnimatedHeadline>`). GSAP is
-registered for imperative, scroll-linked work via `useParallax`, though nothing
-currently uses it.
+**One animation library.** Motion (Framer) drives everything — declarative
+reveals (`<Reveal>`, `<RevealGroup>`, `<AnimatedHeadline>`), the hero's
+scroll-linked parallax, and the counters in `<CountUp>`. GSAP was a dependency
+with no consumers and has been removed.
 
-**Reduced motion is handled centrally.** `MotionProvider` sets Framer's
-`reducedMotion: "user"`, GSAP effects are gated with `gsap.matchMedia`, and CSS
-animations are neutralised in `globals.css`. Individual components do not each
-re-check the preference — so new Motion animation inherits the behaviour for free.
+**Buttons stay server components.** `<Button>` renders no JavaScript of its own;
+hover, focus and press-scale are pure CSS. The one client island is `<Ripple>`,
+mounted *inside* the button, which listens for the press one level up through
+`parentElement`. Primary buttons ripple from the pointer; secondary buttons get a
+translucent sweep and a border ring instead, because their fill and label colour
+are locked together for contrast and a directional repaint would strand the label
+mid-transition.
+
+**Reduced motion is handled centrally, with two exceptions.** `MotionProvider`
+sets Framer's `reducedMotion: "user"` and `globals.css` clamps every CSS
+animation, so declarative animation and anything CSS-driven inherits the
+behaviour for free. Values *bound to scroll* are not animations in that sense —
+the hero parallax and `<CountUp>` check `useAllowsMotion()` themselves.
+
+**Glass surfaces are `@utility`, not plain classes.** Tailwind only generates
+variants for utilities it knows about, so `surface-glass` and its siblings are
+registered with `@utility` in `globals.css`. That is what makes
+`lg:surface-glass` work — several components are a plain row on a phone and a
+glass card on a wide screen, from one markup tree.
 
 **Accessibility.** Skip link, visible focus rings, `aria-current="page"` on the
 active nav item, `aria-expanded` and `Escape` handling on the mobile sheet, real
@@ -159,7 +178,12 @@ Four things ship deliberately unfinished, each marked with a `TODO` in code:
    sender still sees a success message. Add rate limiting before the URL is public
    for long; the honeypot only stops naive bots. **This is the one that loses
    business if forgotten.**
-2. **Testimonials are sample content.** `src/data/testimonials.ts` holds
+2. **Reviews and testimonials are not live.** `src/data/reviews.ts` ships with an
+   empty array and `REVIEWS_ARE_PLACEHOLDER = true`, so `ReviewsSection` renders
+   nothing. The card treatment mimics a Google Business Profile review — stars,
+   avatar, date — and that styling is a claim, so it must not carry text no
+   customer wrote. Add real reviews, flip the flag, and only *then* add
+   `aggregateRating` to the JSON-LD. Separately, `src/data/testimonials.ts` holds
    illustrative quotes with fictional attribution (every author is "Sample Client"),
    so `TestimonialsSection` renders **nothing at all** while
    `TESTIMONIALS_ARE_PLACEHOLDER` is `true`. Replace with approved client quotes and

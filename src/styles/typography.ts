@@ -30,9 +30,9 @@ export const fontWeight = {
  */
 export const fontSize = {
   /** Hero headline. */
-  display: "clamp(2.75rem, 7vw, 6rem)",
+  display: "clamp(2.25rem, 7vw, 6rem)",
   /** Section headings. */
-  h2: "clamp(2rem, 4.5vw, 3.75rem)",
+  h2: "clamp(1.75rem, 4.5vw, 3.75rem)",
   /** Card titles, sub-section headings. */
   h3: "clamp(1.375rem, 2vw, 1.875rem)",
   h4: "clamp(1.125rem, 1.4vw, 1.375rem)",

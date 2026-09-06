@@ -56,7 +56,6 @@ export function BookingEmbed({ className }: { className?: string }) {
             <li key={phone.e164}>
               <a
                 href={`tel:+${phone.e164}`}
-                data-cursor="hover"
                 className="inline-flex items-center gap-2 text-sm text-brand-strong transition-colors duration-200 hover:text-foreground"
               >
                 <Icon name="phone" size={14} />
@@ -70,7 +69,6 @@ export function BookingEmbed({ className }: { className?: string }) {
                 href={link.href}
                 target="_blank"
                 rel="noreferrer noopener"
-                data-cursor="hover"
                 className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors duration-200 hover:text-foreground"
               >
                 {link.label}

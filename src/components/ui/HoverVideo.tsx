@@ -32,7 +32,8 @@ export interface HoverVideoProps {
  *
  * Efficiency: nothing is fetched until the first hover — the `<video>` element
  * is only mounted at that point, and `preload="none"` keeps even that request
- * to the first hover's `play()`. Users who never hover pay nothing.
+ * to the first hover's `play()`. Users who never hover pay nothing, and touch
+ * pointers are excluded outright so a phone tap never starts a download.
  *
  * Accessibility: `prefers-reduced-motion` is respected (the clip is never
  * started), the element is focusable so keyboard users get the same preview,
@@ -64,6 +65,17 @@ export function HoverVideo({
     });
   }, [src]);
 
+  /* `pointerenter` fires for touch as well as mouse, so on a phone a *tap* on
+     the card was starting a video download the reader never asked for — on
+     their data, to show a hover preview a touch device can never display. */
+  const startFromPointer = useCallback(
+    (event: React.PointerEvent) => {
+      if (event.pointerType === "touch") return;
+      start();
+    },
+    [start],
+  );
+
   const stop = useCallback(() => {
     setPlaying(false);
     const video = videoRef.current;
@@ -79,7 +91,7 @@ export function HoverVideo({
   return (
     <div
       className={cn("relative h-full w-full", className)}
-      onPointerEnter={start}
+      onPointerEnter={startFromPointer}
       onPointerLeave={stop}
       onFocus={start}
       onBlur={stop}

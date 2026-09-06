@@ -9,13 +9,19 @@
  */
 
 export const site = {
-  name: "Softaura Technology",
+  /**
+   * The company name is written `SoftAura` — one word, capital S, capital A.
+   * Every rendered spelling on the site derives from this field and `shortName`
+   * below, so the casing is fixed in one place. The lowercase form survives only
+   * in the domain and email addresses, where it is part of the address itself.
+   */
+  name: "SoftAura Technology",
   /** Short form for the navbar wordmark. */
-  shortName: "Softaura",
+  shortName: "SoftAura",
   /** One-line positioning statement. Used in metadata and the footer. */
   tagline: "SaaS & enterprise product engineering",
   description:
-    "Softaura Technology is a product engineering company building scalable SaaS platforms, enterprise web applications and AI-powered software for businesses across India and the UAE.",
+    "SoftAura Technology is a product engineering company building scalable SaaS platforms, enterprise web applications and AI-powered software for businesses across India and the UAE.",
   /**
    * Canonical origin. Overridden per-environment by `NEXT_PUBLIC_SITE_URL`;
    * the fallback keeps local builds and previews from emitting broken
@@ -37,11 +43,14 @@ export const contact = {
       display: "+91 89400 66770",
       /** E.164, no punctuation — required by `tel:` and `wa.me`. */
       e164: "918940066770",
+      /** ISO 3166-1 alpha-2, so the flag is data rather than a lookup by name. */
+      country: "IN",
     },
     {
       label: "UAE",
       display: "+971 56 140 3767",
       e164: "971561403767",
+      country: "AE",
     },
   ],
   /** Serviced regions, shown in the contact section. */
@@ -77,4 +86,7 @@ export const whatsappLinks = contact.phones.map((phone) => ({
   label: `WhatsApp — ${phone.label}`,
   href: `https://wa.me/${phone.e164}`,
   display: phone.display,
+  /** The office this number reaches, for UI that groups by region. */
+  region: phone.label,
+  country: phone.country,
 }));

@@ -102,7 +102,6 @@ export function ProjectCard({
         <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link
             href={caseStudyPath(project.id)}
-            data-cursor="hover"
             /* The link text names the project rather than repeating "read more"
                on every card — a screen-reader user listing the page's links
                otherwise gets three identical entries. */
@@ -122,7 +121,6 @@ export function ProjectCard({
               href={project.url}
               target="_blank"
               rel="noreferrer noopener"
-              data-cursor="hover"
               className="inline-flex items-center gap-1.5 text-sm text-subtle transition-colors duration-200 hover:text-foreground"
             >
               Visit site

@@ -2,14 +2,19 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "reac
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { Icon, type IconName } from "./Icon";
+import { Ripple } from "./Ripple";
 
 /**
  * The site's only button.
  *
- * Deliberately a **server component**: every state is pure CSS, and the cursor
- * accent is opt-in through `data-cursor`, which the global `<CustomCursor>` picks
- * up by selector. That keeps buttons out of the client bundle entirely, even in
- * Server Component sections.
+ * Still a **server component**. Hover, focus and press-scale are pure CSS; the
+ * only JavaScript is `<Ripple>`, a small client island mounted *inside* the
+ * button that listens for the press one level up. So neither this component nor
+ * `Icon` — nor any of the fifteen sections that render a button — is pulled
+ * into the client bundle.
+ *
+ * `overflow-hidden` is load-bearing: the press effects are absolutely
+ * positioned children that would otherwise escape the pill radius.
  *
  * Renders `<Link>` for internal hrefs, `<a>` for external ones (detected, not
  * configured) and `<button>` when there is no href.
@@ -19,7 +24,7 @@ type Variant = "primary" | "secondary" | "ghost" | "outline";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "group/btn relative inline-flex items-center justify-center gap-2 rounded-full font-medium " +
+  "group/btn relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full font-medium " +
   "transition-[transform,background-color,background-position,border-color,color,box-shadow] duration-350 " +
   "ease-out-expo active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50";
 
@@ -38,7 +43,10 @@ const variants: Record<Variant, string> = {
     "text-white bg-[linear-gradient(120deg,var(--brand-600)_0%,var(--brand-500)_45%,var(--secondary-600)_100%)] " +
     "bg-[length:200%_100%] bg-[position:0%_50%] hover:bg-[position:100%_50%] " +
     "shadow-[0_12px_32px_-10px_color-mix(in_oklab,var(--brand-600)_65%,transparent)] " +
-    "hover:shadow-[0_18px_44px_-10px_color-mix(in_oklab,var(--secondary-600)_60%,transparent)]",
+    "hover:shadow-[0_18px_44px_-10px_color-mix(in_oklab,var(--secondary-600)_60%,transparent)] " +
+    /* Press pulls the glow in tight under the button, so the press-scale reads
+       as the button being pushed toward the page rather than just shrinking. */
+    "active:shadow-[0_6px_18px_-8px_color-mix(in_oklab,var(--brand-700)_75%,transparent)]",
   /**
    * Equal-weight alternative next to a primary.
    *
@@ -46,6 +54,13 @@ const variants: Record<Variant, string> = {
    * background appears *solely* on hover/focus, and the label flips to white in
    * the same beat so it never sits mid-transition against a colour it cannot be
    * read on. `brand-600` is the fill (not `brand-500`) for the same AA reason.
+   *
+   * That pairing is why the press effect here is a `sweep` rather than the
+   * `ripple` used on primary: a directional fill would repaint the background
+   * progressively while the label had already flipped, stranding white text on
+   * the off-white canvas at whichever end the wipe had not reached. The sweep
+   * and its border ring sit *over* whatever the fill currently is, so neither
+   * state can be broken. See `Ripple.tsx`.
    */
   secondary:
     "bg-transparent text-brand-strong border border-[color-mix(in_oklab,var(--brand-600)_30%,transparent)] " +
@@ -111,22 +126,22 @@ export function Button(props: ButtonProps) {
     className,
   );
 
+  /* `relative` on the label and icon lifts them above the press effects without
+     needing a stacking context: the ripple host is painted first because it
+     comes first in DOM order, and positioned siblings paint over it. */
   const content = (
     <>
-      <span>{children}</span>
+      <Ripple mode={variant === "secondary" ? "sweep" : "ripple"} />
+      <span className="relative">{children}</span>
       {icon ? (
         <Icon
           name={icon}
           size={18}
-          className="transition-transform duration-350 ease-out-expo group-hover/btn:translate-x-1"
+          className="relative transition-transform duration-350 ease-out-expo group-hover/btn:translate-x-1"
         />
       ) : null}
     </>
   );
-
-  /* The attribute the global cursor looks for: it grows the accent dot slightly.
-     It never moves the real pointer. */
-  const cursorProps = { "data-cursor": "hover" } as const;
 
   if (props.href !== undefined) {
     const { href, ...anchorRest } = rest as AnchorHTMLAttributes<HTMLAnchorElement> & {
@@ -138,7 +153,6 @@ export function Button(props: ButtonProps) {
         <a
           href={href}
           className={classes}
-          {...cursorProps}
           {...(href.startsWith("http")
             ? { target: "_blank", rel: "noreferrer noopener" }
             : {})}
@@ -150,7 +164,7 @@ export function Button(props: ButtonProps) {
     }
 
     return (
-      <Link href={href} className={classes} {...cursorProps} {...anchorRest}>
+      <Link href={href} className={classes} {...anchorRest}>
         {content}
       </Link>
     );
@@ -160,7 +174,6 @@ export function Button(props: ButtonProps) {
     <button
       type="button"
       className={classes}
-      {...cursorProps}
       {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
     >
       {content}

@@ -30,8 +30,8 @@
   --error: #fb7185;
 
   /* Fluid type scale (see styles/typography.ts) */
-  --text-display: clamp(2.75rem, 7vw, 6rem);
-  --text-h2: clamp(2rem, 4.5vw, 3.75rem);
+  --text-display: clamp(2.25rem, 7vw, 6rem);
+  --text-h2: clamp(1.75rem, 4.5vw, 3.75rem);
   --text-h3: clamp(1.375rem, 2vw, 1.875rem);
   --text-h4: clamp(1.125rem, 1.4vw, 1.375rem);
   --text-lead: clamp(1.0625rem, 1.4vw, 1.25rem);
@@ -43,6 +43,11 @@
 
   /* Layout */
   --nav-height: 4.5rem;
+
+  /* Shared by `.bg-grid` and `.bg-grid-lines` so the pattern is written once. */
+  --grid-lines:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
 }
 
 /* ---------------------------------------------------------------------------
@@ -131,6 +136,14 @@
   --glass-border: color-mix(in oklab, var(--foreground) 12%, transparent);
   --glass-blur: 20px;
 
+  /* Near-opaque canvas for chrome that has to *erase* what scrolls under it
+     rather than tint it — the mobile navbar. Frost is a desktop luxury: on a
+     phone the bar is a third of the content width away from the text passing
+     beneath it, and at the 0.81 alpha `--glass-tint` produces, body copy stays
+     legible straight through the menu. Derived from `--background`, so every
+     preset gets its own correct value with no per-theme override. */
+  --glass-tint-solid: color-mix(in oklab, var(--background) 96%, transparent);
+
   /* Hover lift for interactive cards. */
   --shadow-card-hover: 0 20px 40px -12px rgb(0 0 0 / 0.6);
 
@@ -199,6 +212,10 @@
   --animate-marquee: marquee 40s linear infinite;
   --animate-gradient: gradient-pan 8s ease infinite;
   --animate-float: float 6s ease-in-out infinite;
+  --animate-ripple: ripple 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-press-sweep: press-sweep 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-press-glow: press-glow 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-count-in: count-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes marquee {
@@ -228,6 +245,59 @@
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+/* Button press. The span is positioned and sized by `Ripple`, which centres it
+   on the pointer; this only grows and fades it. `forwards` holds the end state
+   until the element is removed on `animationend`. */
+@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.42;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Secondary-button press: a translucent band crossing the button. The element
+   starts one full width to the left, so 0% is off-stage and 200% is clear of
+   the right edge. Purely additive — it never repaints the fill, which is what
+   keeps the ghost variant's label/fill contrast pairing intact. */
+@keyframes press-sweep {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+/* The border half of the same press — a ring expanding off the edge. */
+@keyframes press-glow {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-500) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+@keyframes count-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -298,6 +368,53 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Glass surfaces.
+
+   Registered with `@utility` rather than as plain classes in `@layer utilities`
+   like everything below, and the difference is not cosmetic: Tailwind only
+   generates variants for utilities it knows about. A plain `.surface-glass` in
+   a layer cannot be written as `lg:surface-glass`, which several responsive
+   panels need. Registering them here makes every variant available — `lg:`,
+   `hover:`, `motion-reduce:` — at no cost to the existing call sites.
+
+   All values come from the active preset (see the derived-tokens block above)
+   rather than a hard-coded white, so the frost stays correct on a dark *and* a
+   light canvas.
+
+   `backdrop-filter` is deliberately not set on any of them — every consumer
+   pairs the class with a Tailwind blur utility plus a `@supports` fallback, so
+   a browser without backdrop-filter gets an opaque surface rather than an
+   unreadable transparent one.
+--------------------------------------------------------------------------- */
+
+/* Translucent card/panel surface — the default. */
+@utility surface-glass {
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-tint);
+}
+
+/* Heavier frost, for chrome that must stay legible over arbitrary content. */
+@utility surface-glass-strong {
+  border: 1px solid var(--glass-border);
+  background-color: color-mix(in oklab, var(--background) 45%, var(--glass-tint));
+}
+
+/* Near-opaque. `-strong` resolves to roughly 0.81 alpha, which is a handsome
+   frost on a desktop bar floating over its own hero and a legibility problem on
+   a phone, where body copy scrolls directly beneath the menu items. The navbar
+   pairs this with `lg:surface-glass-strong`. */
+@utility surface-glass-solid {
+  border: 1px solid var(--glass-border);
+  background-color: var(--glass-tint-solid);
+}
+
+/* Barely-there frost for large decorative panels behind the hero copy. */
+@utility surface-glass-subtle {
+  border: 1px solid color-mix(in oklab, var(--glass-border) 60%, transparent);
+  background-color: color-mix(in oklab, var(--glass-tint) 55%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
    Utilities
 --------------------------------------------------------------------------- */
 
@@ -329,31 +446,8 @@
     );
   }
 
-  /* Translucent card/panel surface. Both values come from the active preset
-     (see the derived-tokens block above) rather than a hard-coded white, so the
-     frost stays correct on a dark *and* a light canvas.
-
-     `backdrop-filter` is deliberately not set here — the `Card` glass variant
-     pairs this with a Tailwind blur utility plus a `@supports` fallback, so a
-     browser without backdrop-filter gets an opaque surface instead of an
-     unreadable transparent one. */
-  .surface-glass {
-    border: 1px solid var(--glass-border);
-    background-color: var(--glass-tint);
-  }
-
-  /* Heavier frost, for chrome that must stay legible over arbitrary content —
-     the navbar and the mobile sheet. */
-  .surface-glass-strong {
-    border: 1px solid var(--glass-border);
-    background-color: color-mix(in oklab, var(--background) 45%, var(--glass-tint));
-  }
-
-  /* Barely-there frost for large decorative panels behind the hero copy. */
-  .surface-glass-subtle {
-    border: 1px solid color-mix(in oklab, var(--glass-border) 60%, transparent);
-    background-color: color-mix(in oklab, var(--glass-tint) 55%, transparent);
-  }
+  /* The four glass surfaces are registered with `@utility` below this block,
+     not here. See the note there. */
 
   /* Hairline ring in the same theme-aware ink. `-soft` is the fainter step. */
   .ring-hairline {
@@ -376,10 +470,17 @@
   }
 
   /* Faint grid, used behind the technology and process sections. */
+  /* The bare rule grid. Split out from `.bg-grid` so the hero can translate the
+     lines *inside* a separately-masked wrapper — moving a masked element would
+     drag its fade along with it. One cell is 64px, so a 64px translation loops
+     seamlessly. */
+  .bg-grid-lines {
+    background-image: var(--grid-lines);
+    background-size: 64px 64px;
+  }
+
   .bg-grid {
-    background-image:
-      linear-gradient(to right, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-image: var(--grid-lines);
     background-size: 64px 64px;
     mask-image: radial-gradient(70% 60% at 50% 40%, #000 0%, transparent 100%);
   }

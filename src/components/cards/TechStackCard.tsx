@@ -12,9 +12,15 @@ export interface TechStackCardProps {
 /**
  * One layer of the technology stack.
  *
- * Each technology carries a short note explaining its role. The note is shown on
- * hover *and* focus, and is always present in the DOM — so it is available to
- * screen readers and on touch devices, where hover never fires.
+ * Each technology carries a short note explaining its role. The note is always
+ * present in the DOM, so screen readers reach it whatever the visual state.
+ *
+ * Sighted readers get it three ways: hover, keyboard focus, and — on a touch
+ * device — permanently expanded. That last case is not redundant. Tailwind v4
+ * scopes `hover:` inside `@media (hover: hover)`, so on a phone the collapse
+ * had no counterpart that could ever open it and roughly 140 words of copy were
+ * unreachable on every mobile visit. There is no tap affordance to add here
+ * either: these are list rows, not controls.
  */
 export function TechStackCard({ category, className }: TechStackCardProps) {
   return (
@@ -37,7 +43,7 @@ export function TechStackCard({ category, className }: TechStackCardProps) {
           >
             <span className="text-sm font-medium text-foreground">{item.name}</span>
             {/* Collapsed by default; grid-rows transition keeps it from jumping. */}
-            <span className="grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-350 ease-out-expo group-hover/tech:grid-rows-[1fr] group-focus-visible/tech:grid-rows-[1fr] motion-reduce:grid-rows-[1fr]">
+            <span className="grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows] duration-350 ease-out-expo group-hover/tech:grid-rows-[1fr] group-focus-visible/tech:grid-rows-[1fr] motion-reduce:grid-rows-[1fr] [@media(hover:none)]:grid-rows-[1fr]">
               <span className="min-h-0 pt-1 text-xs text-subtle">{item.note}</span>
             </span>
           </li>
