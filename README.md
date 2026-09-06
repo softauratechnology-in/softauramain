@@ -73,6 +73,7 @@ softaura-portfolio-main/
 │   │   ├── hero/             HeroBackdrop (animated gradient + glass panels)
 │   │   ├── layout/           Navbar, Footer, PageHeader, MotionProvider, PageTransition
 │   │   ├── ui/               Button, Ripple, Card, Accordion, CountUp, MarqueeRow, StarRating, Icon, …
+│   │   ├── visuals/          SystemDiagram — abstract decoration, never a mock product UI
 │   │   ├── BookingEmbed.tsx
 │   │   ├── ContactForm.tsx
 │   │   └── WhatsAppWidget.tsx  Floating dual-region launcher (India / UAE)
