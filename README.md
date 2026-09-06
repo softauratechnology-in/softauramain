@@ -102,6 +102,7 @@ softaura-portfolio-main/
 | WhatsApp offices               | `contact.phones` in `src/constants/site.ts` (widget derives both) |
 | Headline figures               | `src/data/stats.ts` — every value is computed, never typed      |
 | Client reviews                 | `src/data/reviews.ts` (gated; see "Before launch")             |
+| Google Analytics               | `src/components/Analytics.tsx`; ID via `NEXT_PUBLIC_GA_ID`      |
 
 > **Colour tokens are declared twice on purpose.** `globals.css` is what Tailwind
 > utilities compile against; `colors.ts` is for JavaScript consumers (`theme-color`,

@@ -5,6 +5,7 @@ import { MotionProvider } from "@/components/layout/MotionProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppWidget } from "@/components/WhatsAppWidget";
+import { Analytics } from "@/components/Analytics";
 import { site, contact } from "@/constants/site";
 import { semantic } from "@/styles/colors";
 import { ACTIVE_THEME, isLightTheme } from "@/styles/themes";
@@ -144,6 +145,11 @@ export default function RootLayout({
           {/* Persistent across routes, so it lives here rather than per-page. */}
           <WhatsAppWidget />
         </MotionProvider>
+
+        {/* Mounted once, here, for the whole site — Google's "paste it into
+            every page" instruction would load `gtag.js` on every route. Renders
+            nothing outside production; see the notes in the component. */}
+        <Analytics />
       </body>
     </html>
   );
