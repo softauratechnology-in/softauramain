@@ -34,7 +34,7 @@ export const SECTION_IDS = {
   work: "work",
   process: "process",
   technology: "how-we-build",
-  testimonials: "testimonials",
+  reviews: "reviews",
   contact: "contact",
 } as const;
 

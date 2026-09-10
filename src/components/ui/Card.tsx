@@ -29,7 +29,7 @@ const variants = {
 /**
  * The shared card shell.
  *
- * Every card in the site (service, project, testimonial, feature, tech) composes
+ * Every card in the site (service, project, review, feature, tech) composes
  * this, so radius, border colour and the hover lift are defined exactly once.
  * Card *content* layout is each specific card's business.
  */

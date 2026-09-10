@@ -4,8 +4,9 @@ import { cn } from "@/lib/cn";
 export interface MarqueeRowProps {
   /**
    * The items to scroll. Each is rendered twice — once for the visible track and
-   * once for the `aria-hidden` duplicate that makes the loop seamless — so keep
-   * them cheap and side-effect free.
+   * once for the hidden duplicate that makes the loop seamless — so keep them
+   * cheap and side-effect free. Interactive children are safe: the duplicate is
+   * `inert`, so nothing inside it is focusable or clickable.
    */
   items: readonly ReactNode[];
   /** Seconds for one full loop. Roughly 6s per card reads unhurried. */
@@ -88,7 +89,14 @@ export function MarqueeRow({
         style={{ "--marquee-duration": `${duration}s` } as React.CSSProperties}
       >
         {track}
-        <div aria-hidden className="flex shrink-0">
+        {/* `inert`, not just `aria-hidden`. `aria-hidden` removes the duplicate
+            from the accessibility tree but leaves its contents in the tab
+            order, so any link or button inside an item would be reachable
+            twice — the second time announcing nothing, because the element it
+            landed on is hidden from assistive tech. `inert` removes focus and
+            pointer interaction as well, which is what actually makes the copy
+            a copy. */}
+        <div aria-hidden inert className="flex shrink-0">
           {track}
         </div>
       </div>

@@ -4,7 +4,6 @@ import { ServicesTeaser } from "@/sections/ServicesTeaser";
 import { WhyUsSection } from "@/sections/WhyUsSection";
 import { WorkTeaser } from "@/sections/WorkTeaser";
 import { ReviewsSection } from "@/sections/ReviewsSection";
-import { TestimonialsSection } from "@/sections/TestimonialsSection";
 import { CtaSection } from "@/sections/CtaSection";
 import { Marquee } from "@/components/ui/Marquee";
 import { primaryServices } from "@/data/services";
@@ -21,10 +20,9 @@ import { primaryServices } from "@/data/services";
  * carries the detail. The home page's job is to get a stranger to the right
  * page, not to be every page at once.
  *
- * Two of these render nothing today and are mounted anyway.
- * `TestimonialsSection` is gated on its sample-content flag and
- * `ReviewsSection` on an empty review list; each appears here automatically the
- * moment real content replaces the placeholder, with no edit to this file.
+ * `ReviewsSection` is mounted whether or not there are reviews to show: it
+ * renders nothing while `data/reviews.ts` is empty, and appears on its own the
+ * moment a review is added, with no edit to this file.
  *
  * The marquee between hero and services is the one piece of layout that lives
  * here, because it belongs to the seam between two sections rather than to
@@ -45,7 +43,6 @@ export default function HomePage() {
       <WhyUsSection />
       <WorkTeaser />
       <ReviewsSection />
-      <TestimonialsSection />
       <CtaSection />
     </main>
   );

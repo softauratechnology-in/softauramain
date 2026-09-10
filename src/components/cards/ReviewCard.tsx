@@ -37,7 +37,13 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
     <Card
       as="figure"
       variant="glass"
-      className={cn("w-[19rem] shrink-0 justify-between sm:w-[22rem]", className)}
+      /* Not `justify-between`. Cards in a marquee row are stretched to a common
+         height, so spreading the three blocks apart pushes a short review's
+         text to the bottom of its card while a long one sits packed at the top
+         — the row then reads as misaligned rather than as a set. Stacked from
+         the top, every card's name, stars and first line land on the same
+         baseline whatever the quote length, and the slack falls at the end. */
+      className={cn("w-[19rem] shrink-0 sm:w-[22rem]", className)}
     >
       <figcaption className="flex items-center gap-3.5">
         {review.avatar ? (
@@ -88,7 +94,15 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
         ) : null}
       </div>
 
-      <blockquote className="mt-4 text-pretty text-sm leading-relaxed text-muted">
+      {/* Clamped to eight lines, and the full text stays in the DOM — the
+          clamp is `-webkit-line-clamp`, so assistive tech and search engines
+          still get every word, and only the visual height is bounded.
+
+          It has to be bounded. Google reviews are unbounded in length, the
+          marquee row is `items-stretch`, and every card here is a fixed width
+          — so without this a single long review sets the height of every other
+          card in its row and the section grows a band of empty glass. */}
+      <blockquote className="mt-4 line-clamp-8 text-pretty text-sm leading-relaxed text-muted">
         {review.quote}
       </blockquote>
     </Card>

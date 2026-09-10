@@ -42,12 +42,14 @@ npm run dev                  # http://localhost:3000
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local`. Both variables are documented in that file.
+Copy `.env.example` to `.env.local`. Every variable is documented in that file.
 
-| Variable               | Scope  | Required | Purpose                                                       |
-| ---------------------- | ------ | -------- | ------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | Client | Yes      | Canonical origin for metadata, Open Graph, sitemap, robots     |
-| `CONTACT_WEBHOOK_URL`  | Server | No       | Where enquiries are POSTed. Unset → logged to the console only |
+| Variable                  | Scope  | Required | Purpose                                                            |
+| ------------------------- | ------ | -------- | ------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SITE_URL`    | Client | Yes      | Canonical origin for metadata, Open Graph, sitemap, robots          |
+| `NEXT_PUBLIC_GA_ID`       | Client | No       | GA4 property. Falls back to the production ID; empty disables it    |
+| `NEXT_PUBLIC_BOOKING_URL` | Client | No       | Scheduling link. Unset → BookingEmbed falls back to phone/WhatsApp  |
+| `CONTACT_WEBHOOK_URL`     | Server | No       | Where enquiries are POSTed. Unset → logged to the console only      |
 
 ---
 
@@ -69,7 +71,7 @@ softaura-portfolio-main/
 │   │   └── globals.css       Design tokens + base styles + custom utilities
 │   ├── animations/           Motion variants and transitions
 │   ├── components/
-│   │   ├── cards/            Service, Project, Review, Testimonial, Feature, Process, TechStack
+│   │   ├── cards/            Service, Project, Review, Feature, Process, TechStack
 │   │   ├── hero/             HeroBackdrop (animated gradient + glass panels)
 │   │   ├── layout/           Navbar, Footer, PageHeader, MotionProvider, PageTransition
 │   │   ├── ui/               Button, Ripple, Card, Accordion, CountUp, MarqueeRow, StarRating, Icon, …
@@ -101,7 +103,7 @@ softaura-portfolio-main/
 | Home page section order        | `src/app/page.tsx`                                              |
 | WhatsApp offices               | `contact.phones` in `src/constants/site.ts` (widget derives both) |
 | Headline figures               | `src/data/stats.ts` — every value is computed, never typed      |
-| Client reviews                 | `src/data/reviews.ts` (gated; see "Before launch")             |
+| Client reviews                 | `src/data/reviews.ts`; profile link via `googleBusinessUrl`    |
 | Google Analytics               | `src/components/Analytics.tsx`; ID via `NEXT_PUBLIC_GA_ID`      |
 
 > **Colour tokens are declared twice on purpose.** `globals.css` is what Tailwind
@@ -163,7 +165,7 @@ glass card on a wide screen, from one markup tree.
 
 **Accessibility.** Skip link, visible focus rings, `aria-current="page"` on the
 active nav item, `aria-expanded` and `Escape` handling on the mobile sheet, real
-`<blockquote>`/`<figure>` for testimonials, and `aria-invalid`/`aria-describedby`
+`<blockquote>`/`<figure>` for reviews, and `aria-invalid`/`aria-describedby`
 wired automatically by `<Field>`. `<AnimatedHeadline>` splits text into one element
 per word for the stagger, so it carries the whole sentence as `aria-label` and hides
 the fragments — assistive tech reads one heading, not a word list.
@@ -180,16 +182,18 @@ Four things ship deliberately unfinished, each marked with a `TODO` in code:
    sender still sees a success message. Add rate limiting before the URL is public
    for long; the honeypot only stops naive bots. **This is the one that loses
    business if forgotten.**
-2. **Reviews and testimonials are not live.** `src/data/reviews.ts` ships with an
-   empty array and `REVIEWS_ARE_PLACEHOLDER = true`, so `ReviewsSection` renders
-   nothing. The card treatment mimics a Google Business Profile review — stars,
-   avatar, date — and that styling is a claim, so it must not carry text no
-   customer wrote. Add real reviews, flip the flag, and only *then* add
-   `aggregateRating` to the JSON-LD. Separately, `src/data/testimonials.ts` holds
-   illustrative quotes with fictional attribution (every author is "Sample Client"),
-   so `TestimonialsSection` renders **nothing at all** while
-   `TESTIMONIALS_ARE_PLACEHOLDER` is `true`. Replace with approved client quotes and
-   flip the flag; the section then appears on the home page on its own.
+2. **Reviews are not live yet.** `src/data/reviews.ts` ships with an empty array,
+   so `ReviewsSection` renders nothing on either the home or contact page. The
+   card treatment mimics a Google Business Profile review — stars, avatar, date —
+   and that styling is a claim, so it must only ever carry text a real reviewer
+   wrote. Transcribe reviews into the array and the section appears on its own;
+   once Business Profile API access is approved, `scripts/sync-reviews.mjs` writes
+   the same shape and the file becomes a reader over it. Also set
+   `googleBusinessUrl` in `src/constants/site.ts` — without it the "See all reviews
+   on Google" link is omitted, and that link is what lets a reader verify the
+   quotes. **Do not add `aggregateRating` to the JSON-LD** — Google treats
+   self-serving review markup on `Organization`/`LocalBusiness` as ineligible for
+   star results; the reasoning is recorded in `src/data/reviews.ts`.
 3. **Case-study artwork.** The stills in `public/case-studies/` are frames from
    screen recordings rather than clean product screenshots, and the filenames do not
    match their subjects — read the artwork note at the bottom of

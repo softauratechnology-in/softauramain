@@ -81,6 +81,18 @@ export const activeSocials = socials.filter(
   (social): social is SocialLink & { href: string } => social.href !== null,
 );
 
+/**
+ * Public Google Business Profile listing — the Maps URL or a `g.page` short
+ * link.
+ *
+ * Drives the "See all reviews on Google" link under the reviews section, which
+ * is what lets a reader check the quotes against the source rather than taking
+ * the site's word for them. `null` until the real URL is supplied: the link is
+ * then omitted entirely rather than shipped pointing nowhere, the same
+ * convention `socials` uses above.
+ */
+export const googleBusinessUrl: string | null = null; // TODO: supply GBP listing URL
+
 /** WhatsApp deep links, derived so the number is never written twice. */
 export const whatsappLinks = contact.phones.map((phone) => ({
   label: `WhatsApp — ${phone.label}`,

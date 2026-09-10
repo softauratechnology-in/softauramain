@@ -10,11 +10,10 @@ import { layout } from "@/styles/theme";
 /**
  * Work, on the home page — and the page's social proof.
  *
- * Deliberately real systems rather than testimonials: the testimonial data in
- * `data/testimonials.ts` is flagged sample content (every author is literally
- * "Sample Client"), and a fabricated quote undermines the "no bait-and-switch"
- * argument the rest of the page is making. Shipped work is proof we can
- * actually stand behind.
+ * Shipped systems, not claims about them. This section carried the page's
+ * social proof on its own while there were no reviews to show, and it still
+ * does the different job of proving we can build the thing — `ReviewsSection`
+ * below proves clients were glad we did.
  */
 export function WorkTeaser() {
   if (projects.length === 0) return null;
