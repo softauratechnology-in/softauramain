@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/pageMetadata";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ServicesSection } from "@/sections/ServicesSection";
 import { ProcessSection } from "@/sections/ProcessSection";
@@ -7,12 +8,12 @@ import { CtaSection } from "@/sections/CtaSection";
 import { Button } from "@/components/ui/Button";
 import { primaryCta, routes, SECTION_IDS } from "@/constants/navigation";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Services",
   description:
     "Custom software development: SaaS products, ERP systems for schools and growing businesses, mobile apps and online stores. Built by senior engineers in India and the UAE.",
-  alternates: { canonical: routes.services },
-};
+  path: routes.services,
+});
 
 /**
  * Services page.

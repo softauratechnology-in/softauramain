@@ -65,7 +65,20 @@ export interface Review {
  * block in `src/app/layout.tsx` stays as it is. Stars belong on the page, in
  * `ReviewCard`, where they are visibly attributed to a named reviewer.
  */
-export const reviews: Review[] = [];
+export const reviews: Review[] = [
+  {
+    id: "lakshmi-bala",
+    rating: 5,
+    author: "Lakshmi Bala",
+    company: "Technology client",
+    /* Absolute, not "2 weeks ago". A relative string baked into a static file
+       never stops being relative to the day it was written — it would still
+       read "2 weeks ago" next year. */
+    date: "September 2026",
+    quote:
+      "Had a great experience with SoftAura Technology. The team is professional, responsive, and understands the requirements clearly. They provide quality software and digital solutions with good attention to detail. Communication was smooth throughout the process, and the team was really very supportive. Highly recommended for anyone looking for reliable and professional technology services.",
+  },
+];
 
 /** Mean rating, to one decimal. `null` when there is nothing to average. */
 export const averageRating: number | null = reviews.length

@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { CtaSection } from "@/sections/CtaSection";
 import { projects, getProject } from "@/data/projects";
 import { caseStudyPath, primaryCta, routes } from "@/constants/navigation";
+import { site } from "@/constants/site";
 import { layout } from "@/styles/theme";
 
 /**
@@ -39,14 +40,28 @@ export async function generateMetadata(
 
   if (!project) return {};
 
+  const socialTitle = `${project.title} — ${site.name}`;
+
   return {
     title: project.title,
     description: project.summary,
     alternates: { canonical: caseStudyPath(project.id) },
     openGraph: {
-      title: project.title,
+      type: "article",
+      url: caseStudyPath(project.id),
+      siteName: site.name,
+      title: socialTitle,
       description: project.summary,
       images: [{ url: project.image, alt: project.imageAlt }],
+    },
+    /* Twitter is a separate namespace — Next does not copy `openGraph` into it.
+       Without this block the card falls back to the root layout's site-wide
+       title, so every case study shared on X looked like the homepage. */
+    twitter: {
+      card: "summary_large_image",
+      title: socialTitle,
+      description: project.summary,
+      images: [project.image],
     },
   };
 }
@@ -163,8 +178,41 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
   const index = projects.findIndex((entry) => entry.id === project.id);
   const next = projects[(index + 1) % projects.length];
 
+  /* Breadcrumbs. The one schema gap that changes what a searcher actually
+     sees: Google renders this as the path above the result instead of a bare
+     URL. `@id` points at the site-wide graph in `layout.tsx` rather than
+     restating the organisation. */
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: site.url },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Case studies",
+        item: `${site.url}${routes.work}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: project.title,
+        item: `${site.url}${caseStudyPath(project.id)}`,
+      },
+    ],
+  };
+
   return (
     <main id="main">
+      {/* Same `<` escape as every other JSON-LD block on the site — project
+          titles are content, and content can contain markup. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbs).replace(/</g, "\\u003c"),
+        }}
+      />
+
       <PageHeader
         eyebrow={project.category}
         title={[{ text: project.title }]}

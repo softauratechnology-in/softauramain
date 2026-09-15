@@ -37,12 +37,12 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
     <Card
       as="figure"
       variant="glass"
-      /* Not `justify-between`. Cards in a marquee row are stretched to a common
-         height, so spreading the three blocks apart pushes a short review's
-         text to the bottom of its card while a long one sits packed at the top
-         — the row then reads as misaligned rather than as a set. Stacked from
-         the top, every card's name, stars and first line land on the same
-         baseline whatever the quote length, and the slack falls at the end. */
+      /* Not `justify-between`. Spreading the three blocks apart pushes a short
+         review's text to the bottom of the card while a long one packs at the
+         top, so consecutive carousel slides appear to shift their content up
+         and down. Stacked from the top, the name, stars and first line land on
+         the same baseline whatever the quote length, and the slack falls at
+         the end where nobody is reading. */
       className={cn("w-[19rem] shrink-0 sm:w-[22rem]", className)}
     >
       <figcaption className="flex items-center gap-3.5">
@@ -94,15 +94,19 @@ export function ReviewCard({ review, className }: ReviewCardProps) {
         ) : null}
       </div>
 
-      {/* Clamped to eight lines, and the full text stays in the DOM — the
-          clamp is `-webkit-line-clamp`, so assistive tech and search engines
-          still get every word, and only the visual height is bounded.
+      {/* Bounded, but generously. The full text stays in the DOM either way —
+          the clamp is `-webkit-line-clamp`, so assistive tech and search
+          engines lose nothing and only the visual height is capped.
 
-          It has to be bounded. Google reviews are unbounded in length, the
-          marquee row is `items-stretch`, and every card here is a fixed width
-          — so without this a single long review sets the height of every other
-          card in its row and the section grows a band of empty glass. */}
-      <blockquote className="mt-4 line-clamp-8 text-pretty text-sm leading-relaxed text-muted">
+          It was eight lines when these sat in a marquee row, where
+          `items-stretch` meant one long review set the height of every card
+          beside it. That row is gone; the card now lives in a carousel showing
+          one slide at a time, so the only thing a cap protects is the jump
+          between slides of different lengths. Fourteen lines fits a typical
+          Google review whole — a reader should not have to leave the site to
+          finish a sentence about it — while still stopping an outlier from
+          making the controls below leap down the page. */}
+      <blockquote className="mt-4 line-clamp-[14] text-pretty text-sm leading-relaxed text-muted">
         {review.quote}
       </blockquote>
     </Card>

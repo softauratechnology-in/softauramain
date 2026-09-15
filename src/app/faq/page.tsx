@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/pageMetadata";
 import { cn } from "@/lib/cn";
 import { text } from "@/styles/typography";
 import { Container } from "@/components/ui/Container";
@@ -12,12 +13,12 @@ import { faqGroups, faqItems } from "@/data/faq";
 import { primaryCta, routes } from "@/constants/navigation";
 import { layout } from "@/styles/theme";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Common questions",
   description:
     "Straight answers on custom ERP versus off-the-shelf software, how long enterprise software takes to build, what it costs, data security, and who owns the code.",
-  alternates: { canonical: routes.faq },
-};
+  path: routes.faq,
+});
 
 /**
  * FAQ page.

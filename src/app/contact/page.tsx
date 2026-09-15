@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/pageMetadata";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ContactSection } from "@/sections/ContactSection";
@@ -8,11 +9,11 @@ import { Reveal } from "@/components/ui/Reveal";
 import { routes } from "@/constants/navigation";
 import { contact } from "@/constants/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description: `Tell us what you are trying to fix. We work with businesses and schools across ${contact.regions.join(" and ")}, and reply ${contact.responseTime}.`,
-  alternates: { canonical: routes.contact },
-};
+  path: routes.contact,
+});
 
 /**
  * Contact page.

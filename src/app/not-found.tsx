@@ -1,9 +1,25 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { text } from "@/styles/typography";
 import { cn } from "@/lib/cn";
+import { routes } from "@/constants/navigation";
 
-export const metadata = { title: "Page not found" };
+/**
+ * The root layout declares `robots: { index: true, follow: true }` for the whole
+ * site, and Next adds its own `noindex` to a 404 — which left this page
+ * emitting two contradictory `robots` metas plus a `googlebot` tag explicitly
+ * asking to be indexed. Declaring it here overrides the inherited pair.
+ *
+ * The description is its own too: without one it inherited the homepage's, so
+ * the 404 and `/` shipped identical descriptions.
+ */
+export const metadata: Metadata = {
+  title: "Page not found",
+  description:
+    "This page does not exist. Find our services, case studies and contact details from the links here.",
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (
@@ -22,7 +38,7 @@ export default function NotFound() {
           <Button href="/" size="lg" icon="arrowRight">
             Back to home
           </Button>
-          <Button href="/#contact" size="lg" variant="secondary">
+          <Button href={routes.contact} size="lg" variant="secondary">
             Contact us
           </Button>
         </div>

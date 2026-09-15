@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/pageMetadata";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { WorkSection } from "@/sections/WorkSection";
 import { CtaSection } from "@/sections/CtaSection";
 import { Button } from "@/components/ui/Button";
 import { primaryCta, routes } from "@/constants/navigation";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Case studies",
   description:
     "Systems we have designed, built and handed over — including a school management ERP and a corporate web portal for a Dubai construction contractor.",
-  alternates: { canonical: routes.work },
-};
+  path: routes.work,
+});
 
 /** Case-study index. */
 export default function WorkPage() {

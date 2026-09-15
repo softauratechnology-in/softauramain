@@ -21,7 +21,7 @@ import { Ripple } from "./Ripple";
  */
 
 type Variant = "primary" | "secondary" | "ghost" | "outline";
-type Size = "sm" | "md" | "lg";
+type Size = "sm" | "md" | "lg" | "icon";
 
 const base =
   "group/btn relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full font-medium " +
@@ -77,6 +77,16 @@ const sizes: Record<Size, string> = {
   sm: "h-9 px-4 text-sm",
   md: "h-11 px-5 text-sm sm:text-base",
   lg: "h-13 px-7 text-base",
+  /**
+   * Square, no horizontal padding — a circular control holding one glyph and
+   * no label, so it needs an `aria-label`.
+   *
+   * A size entry rather than a `className` override at the call site, because
+   * `cn()` has no tailwind-merge: a `px-0` passed in would land *beside* `px-4`
+   * rather than replacing it, and which one won would come down to stylesheet
+   * order. Capability belongs in the variant maps.
+   */
+  icon: "h-10 w-10",
 };
 
 interface CommonProps {

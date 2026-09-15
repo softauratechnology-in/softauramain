@@ -78,12 +78,10 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
-  /*
-   * TODO (assets): add `src/app/opengraph-image.tsx` (or a static
-   * `opengraph-image.png`, 1200×630) for link previews. Next.js picks the file up
-   * by convention — no metadata change needed here. Omitted rather than pointed at
-   * a non-existent file, which would render a broken preview.
-   */
+  /* Link previews come from `src/app/opengraph-image.tsx`, which Next picks up
+     by file convention — no `openGraph.images` entry belongs here, and adding
+     one would override the generated card with nothing. `/work/[slug]` sets its
+     own and takes precedence. */
 };
 
 export const viewport: Viewport = {
@@ -107,9 +105,34 @@ export default function RootLayout({
     >
       <body className="bg-background text-foreground">
         {/*
-         * Organisation structured data. Emitted as JSON-LD so search engines can
-         * associate the brand, contact routes and service regions. Only facts that
-         * are actually verified go in here.
+         * No-JavaScript fallback.
+         *
+         * The reveal animations render their *initial* state on the server, so
+         * the SSR'd HTML carries an inline `opacity:0` on a few dozen elements
+         * per page — Framer clears them on hydration. The text is in the DOM
+         * either way, so crawlers are unaffected, but a reader whose JavaScript
+         * is blocked, slow, or broken by a hydration error sees a blank page.
+         *
+         * Inline styles beat stylesheets, so this needs `!important`. The two
+         * selectors are deliberate: `opacity:0;` catches a value followed by
+         * another property, `$=` catches it as the last one. Matching a bare
+         * `opacity:0` substring would also hit `opacity:0.5` and flatten the
+         * hero's blurred colour fields, which are meant to be translucent.
+         */}
+        <noscript>
+          <style>{`[style*="opacity:0;"],[style$="opacity:0"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
+        {/*
+         * Site-wide structured data, as a linked `@graph` rather than two loose
+         * blocks. The `@id` values are what tie them together: the `WebSite`
+         * names the `Organization` as its publisher instead of restating the
+         * company, so a search engine reads one entity described twice rather
+         * than two that happen to share a name. Per-page schema — `FAQPage` on
+         * /faq, `BreadcrumbList` on a case study — points at the same ids.
+         *
+         * Only verified facts. No `aggregateRating`: Google treats self-serving
+         * review markup on an `Organization` as ineligible for the star
+         * feature, and the reasoning is recorded in `data/reviews.ts`.
          */}
         {/*
          * `.replace(/</g, "\\u003c")` below: `JSON.stringify` does not escape
@@ -121,19 +144,42 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              name: site.name,
-              url: site.url,
-              description: site.description,
-              email: contact.email,
-              areaServed: contact.regions,
-              contactPoint: contact.phones.map((phone) => ({
-                "@type": "ContactPoint",
-                telephone: `+${phone.e164}`,
-                contactType: "sales",
-                areaServed: phone.label,
-                availableLanguage: ["en"],
-              })),
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": `${site.url}/#organization`,
+                  name: site.name,
+                  url: site.url,
+                  description: site.description,
+                  email: contact.email,
+                  foundingDate: String(site.foundedYear),
+                  areaServed: contact.regions,
+                  knowsAbout: [
+                    "Custom software development",
+                    "SaaS product engineering",
+                    "Enterprise resource planning",
+                    "School management systems",
+                    "Mobile application development",
+                    "E-commerce development",
+                  ],
+                  contactPoint: contact.phones.map((phone) => ({
+                    "@type": "ContactPoint",
+                    telephone: `+${phone.e164}`,
+                    contactType: "sales",
+                    areaServed: phone.label,
+                    availableLanguage: ["en"],
+                  })),
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${site.url}/#website`,
+                  url: site.url,
+                  name: site.name,
+                  description: site.description,
+                  inLanguage: "en",
+                  publisher: { "@id": `${site.url}/#organization` },
+                },
+              ],
             }).replace(/</g, "\\u003c"),
           }}
         />

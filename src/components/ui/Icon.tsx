@@ -67,6 +67,8 @@ const paths = {
   arrowUpRight: "M7 17 17 7m0 0H9m8 0v8",
   plus: "M12 5v14M5 12h14",
   chevronDown: "M6 9.5l6 6 6-6",
+  chevronLeft: "M14.5 6l-6 6 6 6",
+  chevronRight: "M9.5 6l6 6-6 6",
   calendar:
     "M4.5 7.5A1.5 1.5 0 0 1 6 6h12a1.5 1.5 0 0 1 1.5 1.5v11A1.5 1.5 0 0 1 18 20H6a1.5 1.5 0 0 1-1.5-1.5v-11ZM8 4v4M16 4v4M4.5 11h15",
   menu: "M4 7h16M4 12h16M4 17h16",

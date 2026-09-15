@@ -24,15 +24,21 @@ const nextConfig: NextConfig = {
   },
 
   images: {
-    /**
-     * Case-study artwork is currently SVG. Next.js refuses to optimise SVG unless
-     * this is set, because an SVG can carry scripts — so it is only safe while
-     * every image is first-party, from `public/`. If remote or user-supplied images
-     * are ever added, remove this and sanitise them instead.
+    /*
+     * `dangerouslyAllowSVG` used to be set here, because the case studies were
+     * illustrated with SVG placeholders. They are photographs now — `projects.ts`
+     * points at `.jpg`/`.png`, and the three leftover SVGs were referenced by
+     * nothing — so the flag has been removed along with them.
+     *
+     * That is worth more than it looks. The flag lets the image optimiser process
+     * a format that can carry script; the CSP below was mitigating that rather
+     * than preventing it. With no SVG to serve, the hazard is gone rather than
+     * contained. Do not switch it back on without re-reading that trade.
+     *
+     * The CSP and `contentDispositionType` stay: they cost nothing and still
+     * apply to anything the optimiser serves.
      */
-    dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
-    /* Belt and braces: blocks script execution even if an SVG is served inline. */
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     formats: ["image/avif", "image/webp"],
   },
