@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { FlagIcon, type FlagCode } from "@/components/ui/FlagIcon";
 import { whatsappLinks } from "@/constants/site";
 import { transitions } from "@/animations/variants";
+import { useGreeting } from "@/components/greeting/GreetingProvider";
 
 /**
  * Floating WhatsApp launcher with a per-office chooser.
@@ -32,6 +33,7 @@ const WHATSAPP_GREEN = "#25D366";
 
 export function WhatsAppWidget() {
   const [open, setOpen] = useState(false);
+  const { greet } = useGreeting();
   const rootRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
 
@@ -90,7 +92,10 @@ export function WhatsAppWidget() {
                     href={link.href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      setOpen(false);
+                      greet("whatsapp");
+                    }}
                     className="flex items-center gap-3.5 px-5 py-4 transition-colors duration-200 hover:bg-surface-hover"
                   >
                     <FlagIcon code={link.country as FlagCode} size={26} />

@@ -64,6 +64,54 @@ export interface Project {
  */
 export const projects: Project[] = [
   {
+    id: "clear-dental",
+    title: "Clear Dental Care clinic website",
+    client: "Clear Dental Care, Perambalur",
+    category: "Website & booking",
+    description:
+      "A website for a dental practice built so a patient can read about a treatment, get a specific question answered and book an appointment without phoning during clinic hours. Thirteen treatment pages, online booking, aftercare guides and an AI assistant that handles the questions the front desk was fielding by phone.",
+    summary:
+      "A clinic site where patients research a treatment, ask an assistant and book — without phoning during opening hours.",
+    challenge: [
+      "Patients wanting to know what a treatment involves, how long it takes or roughly what it costs had no way to find out other than calling.",
+      "Booking depended on someone being free to answer the phone, during the hours the clinic is treating patients.",
+      "The same handful of questions came up constantly — is it painful, how many visits, what do I do afterwards.",
+      "A dental practice is chosen on trust before price, and there was nowhere online to establish it before someone walked in.",
+    ],
+    approach: [
+      "A page for each of the thirteen treatments, setting out what the procedure involves, how long it takes and how many visits to expect.",
+      "Online appointment booking, available at any hour rather than only when someone can pick up the phone.",
+      "An AI assistant answering questions about treatments, costs and directions, handing over to booking once the visitor is ready.",
+      "Aftercare guides patients can read at home, so post-treatment instructions are not something to remember from a conversation.",
+      "Phone, WhatsApp and email on every page — some people will always prefer to talk, and the site should not fight that.",
+    ],
+    outcome: [
+      "Patients can research a treatment and book an appointment without the clinic answering a phone.",
+      "The assistant takes the repeated questions — cost, duration, how to find the place — at any hour.",
+      "Aftercare instructions are a link the clinic can send rather than a leaflet a patient loses.",
+      "The practice has one address to point every listing, advertisement and referral at.",
+    ],
+    tags: ["Healthcare", "AI chatbot", "Online booking", "Marketing site"],
+    /* Client-supplied promotional artwork rather than a product screenshot — it
+       is the clinic's own campaign graphic, which is why it shows treatment
+       illustrations and the practice rather than the interface. Converted from
+       a 6.7MB PNG to a 1600px JPEG; the original was sixty times the size of
+       every other image in this folder. A screenshot of the booking flow or the
+       assistant would be stronger artwork for a case study about a website, and
+       is worth swapping in if one becomes available. */
+    image: "/case-studies/clear-dental.jpg",
+    imageAlt:
+      "A Clear Dental Care promotional graphic showing the clinic's branding, a patient with orthodontic braces, dental implant and braces diagrams, and the reception and treatment rooms",
+    video: "/case-studies/clear_dental.mp4",
+    /* The first engagement with a public link. The client is already promoting
+       this address themselves, so referencing it needs no separate permission. */
+    url: "https://cleardental.in",
+    /* Featured alongside `school-erp`. Two full-width cards and two half-width
+       ones fill the two-column grid exactly; one featured and three normal
+       leaves an orphan half-card on the last row. */
+    featured: true,
+  },
+  {
     id: "school-erp",
     title: "School management system",
     client: "Private education group",

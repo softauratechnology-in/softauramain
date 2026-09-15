@@ -3,6 +3,7 @@ import { StatsSection } from "@/sections/StatsSection";
 import { ServicesTeaser } from "@/sections/ServicesTeaser";
 import { WhyUsSection } from "@/sections/WhyUsSection";
 import { WorkTeaser } from "@/sections/WorkTeaser";
+import { FaqTeaser } from "@/sections/FaqTeaser";
 import { ReviewsSection } from "@/sections/ReviewsSection";
 import { CtaSection } from "@/sections/CtaSection";
 import { Marquee } from "@/components/ui/Marquee";
@@ -43,6 +44,7 @@ export default function HomePage() {
       <WhyUsSection />
       <WorkTeaser />
       <ReviewsSection />
+      <FaqTeaser />
       <CtaSection />
     </main>
   );

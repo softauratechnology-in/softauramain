@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Syne } from "next/font/google";
 import "./globals.css";
 import { MotionProvider } from "@/components/layout/MotionProvider";
+import { GreetingProvider } from "@/components/greeting/GreetingProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppWidget } from "@/components/WhatsAppWidget";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import { Analytics } from "@/components/Analytics";
 import { site, contact, activeSocials, googleBusinessUrl } from "@/constants/site";
 import { landingPages } from "@/data/landingPages";
@@ -243,11 +245,18 @@ export default function RootLayout({
         />
 
         <MotionProvider>
-          <Navbar />
-          {children}
-          <Footer />
-          {/* Persistent across routes, so it lives here rather than per-page. */}
-          <WhatsAppWidget />
+          {/* Inside MotionProvider so greeting animations inherit the global
+              reduced-motion clamp. */}
+          <GreetingProvider>
+            <Navbar />
+            {children}
+            <Footer />
+            {/* Persistent across routes, so it lives here rather than per-page. */}
+            <WhatsAppWidget />
+            {/* Sits directly above the WhatsApp launcher in the same corner
+                column. See the stacking note in the component. */}
+            <ChatWidget />
+          </GreetingProvider>
         </MotionProvider>
 
         {/* Mounted once, here, for the whole site — Google's "paste it into

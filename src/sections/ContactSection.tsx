@@ -2,6 +2,7 @@ import { cn } from "@/lib/cn";
 import { text } from "@/styles/typography";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { WithGreeting } from "@/components/greeting/WithGreeting";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { Card } from "@/components/ui/Card";
@@ -40,28 +41,32 @@ export function ContactSection() {
                 <h3 className={cn(text.eyebrow, "mb-4")}>Direct</h3>
                 <ul className="flex flex-col gap-4">
                   <li>
-                    <a
-                      href={`mailto:${contact.email}`}
-                      className="group/link flex items-start gap-3 text-base text-foreground transition-colors duration-200 hover:text-brand-soft"
-                    >
-                      <Icon name="mail" size={19} className="mt-0.5 text-brand" />
-                      <span className="break-all">{contact.email}</span>
-                    </a>
+                    <WithGreeting kind="email">
+                      <a
+                        href={`mailto:${contact.email}`}
+                        className="group/link flex items-start gap-3 text-base text-foreground transition-colors duration-200 hover:text-brand-soft"
+                      >
+                        <Icon name="mail" size={19} className="mt-0.5 text-brand" />
+                        <span className="break-all">{contact.email}</span>
+                      </a>
+                    </WithGreeting>
                   </li>
                   {contact.phones.map((phone) => (
                     <li key={phone.e164}>
-                      <a
-                        href={`tel:+${phone.e164}`}
-                        className="flex items-start gap-3 text-base text-foreground transition-colors duration-200 hover:text-brand-soft"
-                      >
-                        <Icon name="phone" size={19} className="mt-0.5 text-brand" />
-                        <span>
-                          {phone.display}
-                          <span className="ml-2 text-sm text-subtle">
-                            {phone.label}
+                      <WithGreeting kind="phone">
+                        <a
+                          href={`tel:+${phone.e164}`}
+                          className="flex items-start gap-3 text-base text-foreground transition-colors duration-200 hover:text-brand-soft"
+                        >
+                          <Icon name="phone" size={19} className="mt-0.5 text-brand" />
+                          <span>
+                            {phone.display}
+                            <span className="ml-2 text-sm text-subtle">
+                              {phone.label}
+                            </span>
                           </span>
-                        </span>
-                      </a>
+                        </a>
+                      </WithGreeting>
                     </li>
                   ))}
                 </ul>

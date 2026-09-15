@@ -660,6 +660,83 @@ export const landingPages: LandingPage[] = [
     ],
     related: ["erp-software", "school-management-software", "web-application-development"],
   },
+
+  {
+    id: "ai-chatbot",
+    section: "solutions",
+    keyword: "AI chatbot development",
+    title: "AI Chatbots",
+    h1: "AI chatbots that answer real customer questions",
+    h1Accent: "real customer questions",
+    metaTitle: "AI Chatbot Development",
+    metaDescription:
+      "AI chatbot development in Chennai and Dubai. Assistants grounded in your own content that answer accurately, book appointments and hand over to a human.",
+    summary:
+      "An assistant on your site that answers the questions your team currently answers by phone — grounded in your own content, at any hour.",
+    intro:
+      "An AI chatbot answers your customers' questions on your website, at any hour, without anyone on your team typing a reply. The ones worth building are grounded in your own content — your services, your prices, your opening hours — so they answer from what is true about your business rather than improvising. We build them for organisations whose staff spend a real part of the day answering the same handful of questions by phone and WhatsApp.",
+    icon: "sparkle",
+    deliverables: [
+      "Answers drawn from your own content, so it cannot invent a price",
+      "Working at two in the morning, when a customer is deciding",
+      "Hands over to booking, a call or WhatsApp at the right moment",
+      "Says \"I do not know, here is a person\" rather than guessing",
+      "A record of what people asked — and what it could not answer",
+      "Added to the site you already have, with no platform migration",
+    ],
+    useCases: [
+      {
+        title: "Your team answers the same questions all day",
+        body: "What does it cost, are you open on Sunday, do you do this treatment. Each one is three minutes, there are thirty a day, and none of them needed a person.",
+      },
+      {
+        title: "Enquiries arrive outside working hours",
+        body: "Someone deciding at ten at night either gets an answer or goes to whoever answered. Most enquiry forms reply the next morning, by which point the decision is made.",
+      },
+      {
+        title: "WhatsApp has become your support desk",
+        body: "It works until it does not: no record of what was asked, no handover when someone is on leave, and it stops the moment whoever owns the phone is busy.",
+      },
+    ],
+    faqs: [
+      {
+        id: "cost",
+        question: "How much does it cost to build an AI chatbot?",
+        answer:
+          "It depends which of two things you mean. An assistant that answers from a fixed set of your own content — your services, prices and hours — typically costs ₹80,000 to ₹2 lakh to build and nothing per conversation to run. One that uses a large language model to answer freely costs ₹2 lakh to ₹6 lakh and carries a running cost per conversation, usually a few rupees. We will tell you honestly which your situation needs; most businesses asking for the second one are well served by the first.",
+      },
+      {
+        id: "hallucination",
+        question: "Will the chatbot make things up about our business?",
+        answer:
+          "Not if it is built to answer only from your content, which is how we build them. The failure everyone has seen — a chatbot inventing a refund policy or quoting a price that does not exist — comes from letting a language model answer from general knowledge instead of from your material. We ground answers in your own pages and have it decline rather than improvise, because a confident wrong answer about price costs more than no answer.",
+      },
+      {
+        id: "booking",
+        question: "Can the chatbot take bookings or appointments?",
+        answer:
+          "Yes, and it is usually the point. An assistant that answers a question and then leaves the visitor to find the booking form has done half the job. We connect it to whatever you already use — your booking system, a form, WhatsApp or a phone call — so the conversation ends with something on your calendar rather than with the visitor closing the tab.",
+      },
+      {
+        id: "handover",
+        question: "What happens when it cannot answer?",
+        answer:
+          "It says so, and passes the person to you. Every assistant we build has a confidence threshold below which it stops trying and offers a human instead — booking, phone or WhatsApp, whichever suits your business. It also records the question, so the gaps in its knowledge are visible and can be filled rather than silently repeated.",
+      },
+      {
+        id: "training",
+        question: "Do we have to train it, or write hundreds of answers?",
+        answer:
+          "No. It reads the content you already have — service pages, FAQs, price lists, opening hours — so the work is a review of what is on your site rather than a writing project. Where we find a question your site does not answer anywhere, that is worth knowing in its own right, and usually worth fixing on the page as well as in the assistant.",
+      },
+    ],
+    relatedProjectId: "clear-dental",
+    related: [
+      "web-development",
+      "web-application-development",
+      "school-management-software",
+    ],
+  },
 ];
 
 /** Pages under `/services/[slug]`. */

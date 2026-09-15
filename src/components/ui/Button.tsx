@@ -32,16 +32,25 @@ const variants: Record<Variant, string> = {
   /**
    * Primary conversion action. One per viewport, ideally.
    *
-   * Dual-tone gradient. The fill is drawn at twice the button's width and the
-   * *background position* is animated on hover rather than the colours — a
-   * compositable property, where cross-fading two gradients is not.
+   * Dual-tone gradient at rest, arriving at a solid violet on hover.
    *
-   * Ends on `--secondary-600` rather than `-500` because white body text has to
-   * clear AA against the darkest point of the ramp.
+   * That hover used to be a *background-position* shift across the same
+   * gradient — cheap to composite, but the change it produced was a slide
+   * rather than a colour, and next to the secondary button going transparent →
+   * solid indigo it read as nothing happening at all.
+   *
+   * Two gradients cannot cross-fade, and swapping `background-image` outright
+   * cannot transition, so the solid hover fill is a separate absolutely
+   * positioned layer whose *opacity* animates — see `content` below. It is
+   * ordered before `<Ripple>` so the press effect still paints over it.
+   *
+   * The ramp ends on `--secondary-600` rather than `-500` because white body
+   * text has to clear AA against the darkest point of it. The hover layer is
+   * that same `--secondary-600` for the same reason: white on it measures
+   * 5.4:1, where `-500` would fall under 4.5.
    */
   primary:
     "text-white bg-[linear-gradient(120deg,var(--brand-600)_0%,var(--brand-500)_45%,var(--secondary-600)_100%)] " +
-    "bg-[length:200%_100%] bg-[position:0%_50%] hover:bg-[position:100%_50%] " +
     "shadow-[0_12px_32px_-10px_color-mix(in_oklab,var(--brand-600)_65%,transparent)] " +
     "hover:shadow-[0_18px_44px_-10px_color-mix(in_oklab,var(--secondary-600)_60%,transparent)] " +
     /* Press pulls the glow in tight under the button, so the press-scale reads
@@ -141,6 +150,16 @@ export function Button(props: ButtonProps) {
      comes first in DOM order, and positioned siblings paint over it. */
   const content = (
     <>
+      {/* Primary's hover fill. First in DOM so `<Ripple>` and the label paint
+          over it, and `pointer-events-none` so it cannot swallow the click it
+          is reacting to. Focus-visible drives it as well as hover, so a
+          keyboard user sees the same state a mouse user does. */}
+      {variant === "primary" ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[var(--secondary-600)] opacity-0 transition-opacity duration-350 ease-out-expo group-hover/btn:opacity-100 group-focus-visible/btn:opacity-100"
+        />
+      ) : null}
       <Ripple mode={variant === "secondary" ? "sweep" : "ripple"} />
       <span className="relative">{children}</span>
       {icon ? (

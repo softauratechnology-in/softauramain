@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { contact, whatsappLinks } from "@/constants/site";
+import { WithGreeting } from "@/components/greeting/WithGreeting";
 
 /**
  * Calendar booking.
@@ -54,26 +55,30 @@ export function BookingEmbed({ className }: { className?: string }) {
         <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 pl-12">
           {contact.phones.map((phone) => (
             <li key={phone.e164}>
-              <a
-                href={`tel:+${phone.e164}`}
-                className="inline-flex items-center gap-2 text-sm text-brand-strong transition-colors duration-200 hover:text-foreground"
-              >
-                <Icon name="phone" size={14} />
-                {phone.display}
-              </a>
+              <WithGreeting kind="phone">
+                <a
+                  href={`tel:+${phone.e164}`}
+                  className="inline-flex items-center gap-2 text-sm text-brand-strong transition-colors duration-200 hover:text-foreground"
+                >
+                  <Icon name="phone" size={14} />
+                  {phone.display}
+                </a>
+              </WithGreeting>
             </li>
           ))}
           {whatsappLinks.map((link) => (
             <li key={link.href}>
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors duration-200 hover:text-foreground"
-              >
-                {link.label}
-                <Icon name="arrowUpRight" size={13} />
-              </a>
+              <WithGreeting kind="whatsapp">
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors duration-200 hover:text-foreground"
+                >
+                  {link.label}
+                  <Icon name="arrowUpRight" size={13} />
+                </a>
+              </WithGreeting>
             </li>
           ))}
         </ul>

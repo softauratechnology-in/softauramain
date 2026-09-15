@@ -218,9 +218,24 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
         title={[{ text: project.title }]}
         description={project.summary}
         action={
-          <Button href={primaryCta.href} icon="arrowRight">
-            {primaryCta.label}
-          </Button>
+          <>
+            <Button href={primaryCta.href} icon="arrowRight">
+              {primaryCta.label}
+            </Button>
+            {/* The live site, where the client has agreed to be linked. Only a
+                handful of entries carry `url`, so this renders nothing rather
+                than a disabled control on the ones that do not. `Button`
+                detects the external href itself and adds target/rel. */}
+            {project.url ? (
+              <Button
+                href={project.url}
+                variant="secondary"
+                icon="arrowUpRight"
+              >
+                Visit the live site
+              </Button>
+            ) : null}
+          </>
         }
       />
 

@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { footerNav, primaryCta, routes } from "@/constants/navigation";
+import { WithGreeting } from "@/components/greeting/WithGreeting";
 import {
   activeSocials,
   contact,
@@ -105,24 +106,28 @@ export function Footer() {
             </h3>
             <ul className="flex flex-col gap-3 text-sm">
               <li>
-                <a
-                  href={`mailto:${contact.email}`}
-                  className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
-                >
-                  <Icon name="mail" size={15} className="text-subtle" />
-                  {contact.email}
-                </a>
+                <WithGreeting kind="email">
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
+                  >
+                    <Icon name="mail" size={15} className="text-subtle" />
+                    {contact.email}
+                  </a>
+                </WithGreeting>
               </li>
               {contact.phones.map((phone) => (
                 <li key={phone.e164}>
-                  <a
-                    href={`tel:+${phone.e164}`}
-                    className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
-                  >
-                    <Icon name="phone" size={15} className="text-subtle" />
-                    {phone.display}
-                    <span className="text-xs text-subtle">({phone.label})</span>
-                  </a>
+                  <WithGreeting kind="phone">
+                    <a
+                      href={`tel:+${phone.e164}`}
+                      className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
+                    >
+                      <Icon name="phone" size={15} className="text-subtle" />
+                      {phone.display}
+                      <span className="text-xs text-subtle">({phone.label})</span>
+                    </a>
+                  </WithGreeting>
                 </li>
               ))}
               {whatsappLinks.map((link) => (
