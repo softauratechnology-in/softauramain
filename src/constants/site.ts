@@ -20,8 +20,12 @@ export const site = {
   shortName: "SoftAura",
   /** One-line positioning statement. Used in metadata and the footer. */
   tagline: "SaaS & enterprise product engineering",
+  /* Doubles as the homepage meta description, so it is kept under 155
+     characters — past that Google truncates it and the tail is wasted. It also
+     feeds the Organization JSON-LD and llms.txt, which is why it names what we
+     build rather than describing a posture. */
   description:
-    "SoftAura Technology is a product engineering company building scalable SaaS platforms, enterprise web applications and AI-powered software for businesses across India and the UAE.",
+    "SoftAura Technology builds custom ERP systems, web applications, mobile apps and SaaS products for businesses across India and the UAE.",
   /**
    * Canonical origin. Overridden per-environment by `NEXT_PUBLIC_SITE_URL`;
    * the fallback keeps local builds and previews from emitting broken

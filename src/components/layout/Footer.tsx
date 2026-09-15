@@ -61,77 +61,84 @@ export function Footer() {
 
       <div className="divider-fade" />
 
-      {/* Sitemap + contact */}
-      <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="lg:col-span-1">
+      {/* Sitemap + contact.
+
+          The brand block sits on its own row rather than as a fifth column.
+          With four link groups plus contact there are five columns to place,
+          and squeezing the wordmark in beside them left every column too narrow
+          for a label like "School management software" to sit on one line. */}
+      <Container className="py-16">
+        <div>
           <Link href={routes.home} aria-label={`${site.name} — home`}>
             <Wordmark size="md" />
           </Link>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-subtle">
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-subtle">
             {site.tagline}. Building software for teams in{" "}
             {contact.regions.join(" and ")}.
           </p>
         </div>
 
-        {footerNav.map((group) => (
-          <nav key={group.heading} aria-label={group.heading}>
+        <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          {footerNav.map((group) => (
+            <nav key={group.heading} aria-label={group.heading}>
+              <h3 className="mb-4 text-xs font-semibold tracking-[0.14em] text-foreground uppercase">
+                {group.heading}
+              </h3>
+              <ul className="flex flex-col gap-3">
+                {group.items.map((item) => (
+                  <li key={`${group.heading}-${item.label}`}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+  
+          <div>
             <h3 className="mb-4 text-xs font-semibold tracking-[0.14em] text-foreground uppercase">
-              {group.heading}
+              Contact
             </h3>
-            <ul className="flex flex-col gap-3">
-              {group.items.map((item) => (
-                <li key={`${group.heading}-${item.label}`}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-muted transition-colors duration-200 hover:text-foreground"
+            <ul className="flex flex-col gap-3 text-sm">
+              <li>
+                <a
+                  href={`mailto:${contact.email}`}
+                  className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
+                >
+                  <Icon name="mail" size={15} className="text-subtle" />
+                  {contact.email}
+                </a>
+              </li>
+              {contact.phones.map((phone) => (
+                <li key={phone.e164}>
+                  <a
+                    href={`tel:+${phone.e164}`}
+                    className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
                   >
-                    {item.label}
-                  </Link>
+                    <Icon name="phone" size={15} className="text-subtle" />
+                    {phone.display}
+                    <span className="text-xs text-subtle">({phone.label})</span>
+                  </a>
+                </li>
+              ))}
+              {whatsappLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-muted transition-colors duration-200 hover:text-foreground"
+                  >
+                    {link.label}
+                  </a>
                 </li>
               ))}
             </ul>
-          </nav>
-        ))}
-
-        <div>
-          <h3 className="mb-4 text-xs font-semibold tracking-[0.14em] text-foreground uppercase">
-            Contact
-          </h3>
-          <ul className="flex flex-col gap-3 text-sm">
-            <li>
-              <a
-                href={`mailto:${contact.email}`}
-                className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
-              >
-                <Icon name="mail" size={15} className="text-subtle" />
-                {contact.email}
-              </a>
-            </li>
-            {contact.phones.map((phone) => (
-              <li key={phone.e164}>
-                <a
-                  href={`tel:+${phone.e164}`}
-                  className="inline-flex items-center gap-2 text-muted transition-colors duration-200 hover:text-foreground"
-                >
-                  <Icon name="phone" size={15} className="text-subtle" />
-                  {phone.display}
-                  <span className="text-xs text-subtle">({phone.label})</span>
-                </a>
-              </li>
-            ))}
-            {whatsappLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="text-muted transition-colors duration-200 hover:text-foreground"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          </div>
         </div>
       </Container>
 

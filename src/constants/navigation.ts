@@ -13,7 +13,9 @@
 export const routes = {
   home: "/",
   services: "/services",
+  solutions: "/solutions",
   work: "/work",
+  insights: "/insights",
   faq: "/faq",
   contact: "/contact",
 } as const;
@@ -22,6 +24,27 @@ export type Route = (typeof routes)[keyof typeof routes];
 
 /** Detail page for one case study. Keep path construction in one place. */
 export const caseStudyPath = (slug: string): string => `${routes.work}/${slug}`;
+
+/**
+ * Keyword landing pages. Two segments rather than one because the split is
+ * meaningful to a reader — see the header of `data/landingPages.ts` — and
+ * because a URL that says `/solutions/erp-software` describes the thing the
+ * searcher asked for, which is half of why they click.
+ */
+export const servicePath = (slug: string): string => `${routes.services}/${slug}`;
+export const solutionPath = (slug: string): string => `${routes.solutions}/${slug}`;
+
+/** Resolves a landing page to its URL without the caller knowing the section. */
+export const landingPath = (
+  section: "services" | "solutions",
+  slug: string,
+): string => (section === "services" ? servicePath(slug) : solutionPath(slug));
+
+/** City hub — `/locations/chennai`. */
+export const locationPath = (slug: string): string => `/locations/${slug}`;
+
+/** Article detail. */
+export const articlePath = (slug: string): string => `${routes.insights}/${slug}`;
 
 /**
  * In-page anchor targets. Each must match the `id` of a rendered section — a
@@ -45,21 +68,39 @@ export interface NavItem {
   href: string;
 }
 
-/** Primary navbar links. Kept to four — more than that and the bar gets noisy. */
+/**
+ * Primary navbar links.
+ *
+ * Five, not four. `Solutions` earns the extra slot because the landing pages
+ * beneath it are the ones people arrive on from search, and a page reachable
+ * only from the footer accumulates a fraction of the internal link value of one
+ * in the main navigation. The bar is `lg:` and up, where five short labels fit
+ * comfortably alongside the wordmark and the CTA.
+ */
 export const primaryNav: NavItem[] = [
   { label: "Services", href: routes.services },
+  { label: "Solutions", href: routes.solutions },
   { label: "Work", href: routes.work },
   { label: "FAQ", href: routes.faq },
   { label: "Contact", href: routes.contact },
 ];
 
-/** Footer sitemap columns. Broader than the navbar. */
+/**
+ * Footer sitemap columns. Broader than the navbar.
+ *
+ * These now point at the real landing pages rather than at anchors on
+ * `/services`. That is the substantive change: an anchor is the same URL as far
+ * as a search engine is concerned, so four footer links to `/services#...` were
+ * four links to one page. Pointing them at distinct URLs is what lets each one
+ * accumulate its own standing.
+ */
 export const footerNav: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Company",
     items: [
       { label: "Case studies", href: routes.work },
       { label: "How we work", href: `${routes.services}#${SECTION_IDS.process}` },
+      { label: "Insights", href: routes.insights },
       { label: "Common questions", href: routes.faq },
       { label: "Start a project", href: routes.contact },
     ],
@@ -67,10 +108,26 @@ export const footerNav: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Services",
     items: [
-      { label: "SaaS products", href: `${routes.services}#saas-development` },
-      { label: "Custom ERP systems", href: `${routes.services}#custom-erp` },
-      { label: "Mobile apps", href: `${routes.services}#mobile-apps` },
-      { label: "Online stores", href: `${routes.services}#ecommerce` },
+      { label: "Website development", href: servicePath("web-development") },
+      { label: "Web applications", href: servicePath("web-application-development") },
+      { label: "Mobile apps", href: servicePath("mobile-app-development") },
+      { label: "E-commerce", href: servicePath("ecommerce-development") },
+    ],
+  },
+  {
+    heading: "Solutions",
+    items: [
+      { label: "Custom ERP software", href: solutionPath("erp-software") },
+      { label: "School management software", href: solutionPath("school-management-software") },
+      { label: "Inventory management", href: solutionPath("inventory-management-software") },
+      { label: "HR & people management", href: solutionPath("people-management-software") },
+    ],
+  },
+  {
+    heading: "Where we work",
+    items: [
+      { label: "Software development in Chennai", href: locationPath("chennai") },
+      { label: "Software development in Dubai", href: locationPath("dubai") },
     ],
   },
 ];

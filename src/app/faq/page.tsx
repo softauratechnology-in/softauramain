@@ -16,7 +16,7 @@ import { layout } from "@/styles/theme";
 export const metadata: Metadata = pageMetadata({
   title: "Common questions",
   description:
-    "Straight answers on custom ERP versus off-the-shelf software, how long enterprise software takes to build, what it costs, data security, and who owns the code.",
+    "Straight answers on custom ERP versus off-the-shelf, how long software takes to build, what it costs, data security, and who owns the code.",
   path: routes.faq,
 });
 

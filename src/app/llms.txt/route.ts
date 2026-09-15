@@ -1,7 +1,16 @@
 import { site, contact } from "@/constants/site";
-import { caseStudyPath, routes } from "@/constants/navigation";
+import {
+  caseStudyPath,
+  landingPath,
+  locationPath,
+  articlePath,
+  routes,
+} from "@/constants/navigation";
 import { projects } from "@/data/projects";
 import { primaryServices, supportingServices } from "@/data/services";
+import { landingPages, servicePages, solutionPages } from "@/data/landingPages";
+import { locations } from "@/data/locations";
+import { articlesByDate } from "@/data/articles";
 import { faqGroups } from "@/data/faq";
 
 /**
@@ -42,7 +51,9 @@ export function GET(): Response {
     section("Pages", [
       `- [Home](${url(routes.home)}): What we build and who we build it for.`,
       `- [Services](${url(routes.services)}): The four primary services and the supporting work around them.`,
+      `- [Solutions](${url(routes.solutions)}): The systems we are asked for most — ERP, school, inventory, HR.`,
       `- [Case studies](${url(routes.work)}): Systems that went live, written up in full.`,
+      `- [Insights](${url(routes.insights)}): What things cost, and when not to commission software at all.`,
       `- [Common questions](${url(routes.faq)}): Direct answers on cost, timelines, ownership and security.`,
       `- [Contact](${url(routes.contact)}): How to reach us, and what happens after you do.`,
     ]),
@@ -53,18 +64,64 @@ export function GET(): Response {
         ...supportingServices.map((s) => `- ${s.title}: ${s.summary}`),
       ],
     ),
+    /* The landing pages, listed with the search each one answers. An index
+       that says only what a page is called leaves the reader to guess which of
+       eight to open; saying what question it answers is the whole point of
+       publishing an index by hand rather than a sitemap. */
+    section("What we build", [
+      ...servicePages.map(
+        (page) =>
+          `- [${page.title}](${url(landingPath(page.section, page.id))}): ${page.summary}`,
+      ),
+      ...solutionPages.map(
+        (page) =>
+          `- [${page.title}](${url(landingPath(page.section, page.id))}): ${page.summary}`,
+      ),
+    ]),
+    section(
+      "Where we work",
+      locations.map(
+        (location) =>
+          `- [Software development in ${location.city}](${url(locationPath(location.id))}): ${location.intro}`,
+      ),
+    ),
     section(
       "Case studies",
       projects.map(
         (p) => `- [${p.title}](${url(caseStudyPath(p.id))}) — ${p.client}. ${p.summary}`,
       ),
     ),
+    /* Listed with the standfirst rather than the title alone. These pieces
+       exist to answer a question completely, and the answer is the first two
+       sentences — an index that withholds it is making a crawler fetch four
+       pages to find out whether any of them is relevant. */
     section(
-      "What we are asked most",
-      faqGroups.flatMap((group) =>
-        group.items.map((item) => `- ${item.question}`),
+      "Articles",
+      articlesByDate.map(
+        (article) =>
+          `- [${article.title}](${url(articlePath(article.id))}) — ${article.standfirst}`,
       ),
     ),
+    /* Questions from both the FAQ page and every landing page. An answer
+       engine asked "how much does custom ERP cost in India" should be able to
+       find that we answer it, and on which page. */
+    section("What we are asked most", [
+      ...faqGroups.flatMap((group) =>
+        group.items.map((item) => `- ${item.question}`),
+      ),
+      ...landingPages.flatMap((page) =>
+        page.faqs.map(
+          (faq) =>
+            `- ${faq.question} — answered at ${url(landingPath(page.section, page.id))}`,
+        ),
+      ),
+      ...locations.flatMap((location) =>
+        location.faqs.map(
+          (faq) =>
+            `- ${faq.question} — answered at ${url(locationPath(location.id))}`,
+        ),
+      ),
+    ]),
     section("Contact", [
       `- Email: ${contact.email}`,
       ...contact.phones.map((p) => `- ${p.label}: ${p.display}`),

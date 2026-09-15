@@ -6,7 +6,11 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppWidget } from "@/components/WhatsAppWidget";
 import { Analytics } from "@/components/Analytics";
-import { site, contact } from "@/constants/site";
+import { site, contact, activeSocials, googleBusinessUrl } from "@/constants/site";
+import { landingPages } from "@/data/landingPages";
+import { locations } from "@/data/locations";
+import { absolute } from "@/lib/schema";
+import { landingPath } from "@/constants/navigation";
 import { semantic } from "@/styles/colors";
 import { ACTIVE_THEME, isLightTheme } from "@/styles/themes";
 
@@ -45,16 +49,27 @@ export const metadata: Metadata = {
   },
   description: site.description,
   applicationName: site.name,
+  /*
+   * Worth knowing what this is and is not. Google has ignored the keywords meta
+   * entirely since 2009 and says so publicly; Bing treats it as a spam signal
+   * when it is stuffed. It is kept because some smaller engines and a few AI
+   * crawlers still read it, and because an accurate short list costs nothing.
+   *
+   * So it is a *description*, not a bid: every term here is one this site has a
+   * real page answering. The ranking work is done by those pages, not by this.
+   */
   keywords: [
-    "SaaS development company",
-    "enterprise web application development",
-    "custom software development",
-    "AI integration services",
-    "cloud architecture",
-    "product engineering",
-    "Next.js development",
-    "software company India",
-    "software company UAE",
+    "custom software development company",
+    "website development company",
+    "web application development",
+    "mobile app development company",
+    "ERP software development company",
+    "school management software",
+    "inventory management software",
+    "HR and people management software",
+    "e-commerce website development",
+    "software development company in Chennai",
+    "software development company in Dubai",
   ],
   authors: [{ name: site.name, url: site.url }],
   creator: site.name,
@@ -153,15 +168,58 @@ export default function RootLayout({
                   description: site.description,
                   email: contact.email,
                   foundingDate: String(site.foundedYear),
-                  areaServed: contact.regions,
-                  knowsAbout: [
-                    "Custom software development",
-                    "SaaS product engineering",
-                    "Enterprise resource planning",
-                    "School management systems",
-                    "Mobile application development",
-                    "E-commerce development",
-                  ],
+                  /* Derived from the landing pages, so the entity's claimed
+                     expertise and the site's actual pages cannot drift apart.
+                     Claiming knowledge of something with no page behind it is
+                     the kind of small inconsistency that costs trust in an
+                     entity graph. */
+                  knowsAbout: landingPages.map((page) => page.keyword),
+                  /* Every place we say we serve, from one source. */
+                  areaServed: locations.flatMap((location) =>
+                    location.areasServed.map((area) => ({
+                      "@type": "Place",
+                      name: area,
+                    })),
+                  ),
+                  /*
+                   * Entity disambiguation.
+                   *
+                   * Four other businesses currently rank for "SoftAura" —
+                   * softaura.dev, softaurasolutions.com, softauras.com and
+                   * Softura — and a search engine has no way to tell which
+                   * pages belong to which company from the name alone.
+                   * `sameAs` is how you assert "these profiles are also us".
+                   *
+                   * Emitted only when a real URL exists. `socials` and
+                   * `googleBusinessUrl` in `constants/site.ts` are still
+                   * `null`, so today this renders nothing rather than a
+                   * fabricated profile link — which would be worse than the
+                   * ambiguity it is meant to resolve. Fill those in and this
+                   * starts working with no change here.
+                   */
+                  ...(() => {
+                    const profiles = [
+                      googleBusinessUrl,
+                      ...activeSocials.map((social) => social.href),
+                    ].filter((href): href is string => Boolean(href));
+                    return profiles.length > 0 ? { sameAs: profiles } : {};
+                  })(),
+                  /* The catalogue, as entities rather than prose. This is what
+                     lets an answer engine say what we do without inferring it
+                     from marketing copy. */
+                  hasOfferCatalog: {
+                    "@type": "OfferCatalog",
+                    name: "Software development services",
+                    itemListElement: landingPages.map((page) => ({
+                      "@type": "Offer",
+                      itemOffered: {
+                        "@type": "Service",
+                        "@id": `${absolute(landingPath(page.section, page.id))}/#service`,
+                        name: page.title,
+                        serviceType: page.keyword,
+                      },
+                    })),
+                  },
                   contactPoint: contact.phones.map((phone) => ({
                     "@type": "ContactPoint",
                     telephone: `+${phone.e164}`,
