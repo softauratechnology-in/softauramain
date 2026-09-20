@@ -28,10 +28,28 @@ export const site = {
     "SoftAura Technology builds custom ERP systems, web applications, mobile apps and SaaS products for businesses across India and the UAE.",
   /**
    * Canonical origin. Overridden per-environment by `NEXT_PUBLIC_SITE_URL`;
-   * the fallback keeps local builds and previews from emitting broken
-   * absolute URLs in metadata and the sitemap.
+   * the fallback keeps local builds and previews from emitting broken absolute
+   * URLs in metadata and the sitemap.
+   *
+   * **The `www` is load-bearing.** Production serves from
+   * `www.softauratechnology.com` and the apex 308-redirects to it. Every
+   * canonical, `og:url`, sitemap entry, JSON-LD `@id` and `llms.txt` link on
+   * the site derives from this one value — so while it said the bare apex, the
+   * sitemap submitted to Search Console listed twenty-six URLs that all
+   * redirected, and Google files those under "Page with redirect" instead of
+   * indexing them.
+   *
+   * Fixed here rather than only in the Vercel environment on purpose: the
+   * correct address is now the default, so forgetting the variable cannot
+   * quietly reintroduce the mismatch. `NEXT_PUBLIC_SITE_URL` still wins when
+   * set; it is simply no longer the only thing standing between the site and a
+   * sitemap full of redirects.
+   *
+   * If the apex ever becomes primary, change this *and* the redirect together —
+   * they have to agree.
    */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://softauratechnology.com",
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.softauratechnology.com",
   locale: "en_IN",
   /** Founded year, for the footer copyright range. */
   foundedYear: 2021,
