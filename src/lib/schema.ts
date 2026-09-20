@@ -186,3 +186,88 @@ export function articleSchema({
     mainEntityOfPage: { "@type": "WebPage", "@id": absolute(path) },
   };
 }
+
+/** `@id` of the WebSite node published once in `layout.tsx`. */
+export const WEBSITE_ID = `${site.url}/#website`;
+
+/**
+ * A case study.
+ *
+ * `WebPage` rather than `Article`, and the reason is dates. Google's Article
+ * guidance expects `datePublished`, and `projects.ts` does not record when each
+ * engagement shipped — so an `Article` here would either omit the field it is
+ * judged on or carry a date somebody invented. `WebPage` asks for neither and
+ * describes what the page actually is.
+ *
+ * The useful part is `about`: the page is a document, the thing it is *about*
+ * is the system we built. Splitting those means the description of the software
+ * is attached to the software rather than to the write-up of it.
+ *
+ * `mentions` links the case study to the `Service` nodes it proves, by `@id`.
+ * That is the edge worth having — it is how "we build school management
+ * software" and "here is a school management system we built" become one claim
+ * supported by evidence rather than two unconnected assertions.
+ *
+ * **Tech stack is emitted only when `stack` is populated.** It is `undefined`
+ * on every project today, and `projects.ts` is explicit that technology claims
+ * are published only once confirmed. So this renders nothing rather than a
+ * plausible guess, and starts working the day those are filled in.
+ */
+export function caseStudySchema({
+  project,
+  path,
+  demonstrates,
+}: {
+  project: {
+    title: string;
+    client: string;
+    category: string;
+    summary: string;
+    description: string;
+    tags: string[];
+    stack?: string[];
+    image: string;
+    imageAlt: string;
+    url?: string;
+  };
+  path: string;
+  /** `@id`s of the Service nodes this work is evidence for. */
+  demonstrates: string[];
+}) {
+  const stack = project.stack ?? [];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${absolute(path)}/#webpage`,
+    url: absolute(path),
+    name: project.title,
+    description: project.summary,
+    isPartOf: { "@id": WEBSITE_ID },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: absolute(project.image),
+      caption: project.imageAlt,
+    },
+    about: {
+      "@type": "CreativeWork",
+      name: project.title,
+      /* The long form: the problem, then what was delivered. */
+      description: project.description,
+      creator: { "@id": ORGANIZATION_ID },
+      genre: project.category,
+      keywords: [...project.tags, ...stack].join(", "),
+      /* The live system, where the client has agreed to be linked. */
+      ...(project.url ? { url: project.url } : {}),
+      ...(stack.length > 0
+        ? {
+            /* Only reached once `stack` is confirmed — see the note above. */
+            programmingLanguage: stack,
+          }
+        : {}),
+    },
+    ...(demonstrates.length > 0
+      ? { mentions: demonstrates.map((id) => ({ "@id": id })) }
+      : {}),
+  };
+}

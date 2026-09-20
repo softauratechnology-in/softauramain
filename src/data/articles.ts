@@ -130,7 +130,7 @@ export const articles: Article[] = [
     h1Accent: "buy or build?",
     metaTitle: "School Software: Buy or Build?",
     metaDescription:
-      "Buying a ready-made school ERP against building a custom one — the arithmetic, the failure modes of each, and which schools suit which.",
+      "Buying a ready-made school ERP against building a custom one — the arithmetic, the failure modes of each, and which schools suit which. Plus a middle path.",
     standfirst:
       "Most schools should buy a ready-made school ERP. Building custom is the right decision in three specific situations: when your fee structure or reporting genuinely cannot be expressed in a standard product, when per-student licensing across a large or growing roll exceeds what a build would cost, and when you run several branches under different rules.",
     published: "2026-09-15",
@@ -252,7 +252,7 @@ export const articles: Article[] = [
     h1Accent: "which do you actually need?",
     metaTitle: "Website vs Web Application",
     metaDescription:
-      "The difference between a website and a web application, what each costs, and how to tell which one you are actually describing.",
+      "The difference between a website and a web application, what each costs, and how to tell which one you are actually describing. For non-technical buyers.",
     standfirst:
       "A website presents information; a web application does work. You read a website — pages, images, a contact form. You log into a web application and it stores records, applies rules about who can see what, calculates things and produces reports. Most businesses that ask for one eventually need both, and they are separate builds with different costs.",
     published: "2026-09-15",

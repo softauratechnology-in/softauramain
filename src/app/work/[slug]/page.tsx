@@ -12,6 +12,10 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CtaSection } from "@/sections/CtaSection";
 import { projects, getProject } from "@/data/projects";
+import { landingPages } from "@/data/landingPages";
+import { JsonLd } from "@/components/JsonLd";
+import { caseStudySchema, absolute } from "@/lib/schema";
+import { landingPath } from "@/constants/navigation";
 import { caseStudyPath, primaryCta, routes } from "@/constants/navigation";
 import { site } from "@/constants/site";
 import { layout } from "@/styles/theme";
@@ -40,18 +44,21 @@ export async function generateMetadata(
 
   if (!project) return {};
 
-  const socialTitle = `${project.title} — ${site.name}`;
+  const socialTitle = `${project.title} | ${site.name}`;
+  /* `summary` is the on-page line; `metaDescription` is the search snippet.
+     See the note on the field in `data/projects.ts`. */
+  const description = project.metaDescription ?? project.summary;
 
   return {
     title: project.title,
-    description: project.summary,
+    description,
     alternates: { canonical: caseStudyPath(project.id) },
     openGraph: {
       type: "article",
       url: caseStudyPath(project.id),
       siteName: site.name,
       title: socialTitle,
-      description: project.summary,
+      description,
       images: [{ url: project.image, alt: project.imageAlt }],
     },
     /* Twitter is a separate namespace — Next does not copy `openGraph` into it.
@@ -60,7 +67,7 @@ export async function generateMetadata(
     twitter: {
       card: "summary_large_image",
       title: socialTitle,
-      description: project.summary,
+      description,
       images: [project.image],
     },
   };
@@ -178,6 +185,13 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
   const index = projects.findIndex((entry) => entry.id === project.id);
   const next = projects[(index + 1) % projects.length];
 
+  /* The services this engagement is evidence for, resolved to the same @id
+     the landing pages publish. Derived from `relatedProjectId`, so the link is
+     declared once in the data rather than maintained in two directions. */
+  const demonstrates = landingPages
+    .filter((page) => page.relatedProjectId === project.id)
+    .map((page) => `${absolute(landingPath(page.section, page.id))}/#service`);
+
   /* Breadcrumbs. The one schema gap that changes what a searcher actually
      sees: Google renders this as the path above the result instead of a bare
      URL. `@id` points at the site-wide graph in `layout.tsx` rather than
@@ -204,14 +218,17 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
 
   return (
     <main id="main">
-      {/* Same `<` escape as every other JSON-LD block on the site — project
-          titles are content, and content can contain markup. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbs).replace(/</g, "\\u003c"),
-        }}
+      {/* The case study itself: a WebPage that is *about* the system we
+          built, linked by @id to the Service nodes it is evidence for. See
+          `caseStudySchema` for why this is not an Article. */}
+      <JsonLd
+        data={caseStudySchema({
+          project,
+          path: caseStudyPath(project.id),
+          demonstrates,
+        })}
       />
+      <JsonLd data={breadcrumbs} />
 
       <PageHeader
         eyebrow={project.category}

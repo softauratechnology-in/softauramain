@@ -10,7 +10,7 @@ import { routes } from "@/constants/navigation";
 import { contact } from "@/constants/site";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Contact",
+  title: "Contact a Software Development Company",
   description: `Tell us what you are trying to fix. We work with businesses and schools across ${contact.regions.join(" and ")}, and reply ${contact.responseTime}.`,
   path: routes.contact,
 });

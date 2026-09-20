@@ -45,9 +45,29 @@ export const metadata: Metadata = {
      OG/Twitter tags, which crawlers require. */
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.tagline}`,
-    /* Applied to every child route's own title. */
-    template: `%s — ${site.name}`,
+    /*
+     * The homepage title. Deliberately *not* brand-first.
+     *
+     * Leading with the brand is conventional, and it is the wrong call here:
+     * four other businesses currently rank for "SoftAura", the domain is not
+     * yet indexed, and a name with no search volume spends the most valuable
+     * characters in the result on a term nobody types. The categories we want
+     * to be found for go first.
+     *
+     * `title.template` does not apply to `default`, so the brand suffix is
+     * written out — derived from `site.name` so it cannot drift.
+     */
+    default: `Custom ERP, SaaS & Software Development | ${site.name}`,
+    /*
+     * Applied to every child route's own title.
+     *
+     * A pipe rather than an em-dash. Both are conventional, but the dash is
+     * also used *inside* several of our titles ("HR & People Management
+     * Software"), and a separator that can be confused with the content it
+     * separates makes a truncated result harder to parse at a glance. The two
+     * are the same width, so nothing about the 60-character budget changes.
+     */
+    template: `%s | ${site.name}`,
   },
   description: site.description,
   applicationName: site.name,
@@ -82,13 +102,30 @@ export const metadata: Metadata = {
     locale: site.locale,
     url: site.url,
     siteName: site.name,
-    title: `${site.name} — ${site.tagline}`,
+    /* Social cards lead with the brand: a share preview is seen by someone
+       who already has context, where a search result is not. */
+    title: `${site.name} | ${site.tagline}`,
     description: site.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — ${site.tagline}`,
+    title: `${site.name} | ${site.tagline}`,
     description: site.description,
+  },
+  /*
+   * Search Console ownership. Next renders this as
+   * `<meta name="google-site-verification">`, which is the tag-based method —
+   * it verifies whichever property the token was issued for and keeps working
+   * as long as the tag is on the homepage.
+   *
+   * We also serve `public/google2f715258837cad55.html`, the file method, from
+   * an earlier verification. Holding both is deliberate rather than untidy:
+   * either alone is a single point of failure, and losing verification is how
+   * you stop receiving the coverage and manual-action alerts that are the whole
+   * reason for having the property.
+   */
+  verification: {
+    google: "fmjXNoymeAN5Xc7wKxeoWg3t2ksUksOMspBWWEwedPE",
   },
   robots: {
     index: true,
@@ -167,7 +204,9 @@ export default function RootLayout({
                   "@id": `${site.url}/#organization`,
                   name: site.name,
                   url: site.url,
-                  description: site.description,
+                  /* The entity description, not the meta one — see the note in
+                     `constants/site.ts`. */
+                  description: site.entityDescription,
                   email: contact.email,
                   foundingDate: String(site.foundedYear),
                   /* Derived from the landing pages, so the entity's claimed

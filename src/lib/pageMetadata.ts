@@ -40,7 +40,11 @@ export function pageMetadata({
   /** Route-relative path, e.g. `/services`. Resolved by `metadataBase`. */
   path: string;
 }): Metadata {
-  const socialTitle = `${title} — ${site.name}`;
+  /* Matches the document-title template in `layout.tsx`. `title.template`
+     applies to the document title only, so the brand suffix has to be composed
+     by hand here — and if the two ever disagree, a share preview and a search
+     result show the same page under two different names. */
+  const socialTitle = `${title} | ${site.name}`;
 
   return {
     title,

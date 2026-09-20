@@ -157,7 +157,7 @@ export const locations: Location[] = [
     h1Accent: "in Dubai",
     metaTitle: "Software Development Company in Dubai",
     metaDescription:
-      "Custom software development in Dubai and the UAE — ERP, web applications and mobile apps. VAT-ready, Arabic-capable, senior engineers.",
+      "Custom software development in Dubai and the UAE — ERP, web applications and mobile apps. VAT-ready, Arabic-capable, senior engineers. Fixed-price scoping.",
     intro:
       "We build custom software for businesses in Dubai and across the UAE — ERP systems, web applications, mobile apps and e-commerce platforms. We work with companies that need software shaped around their own operation rather than a licensed product they have to adapt to, and we deliver it at a cost structure that reflects our engineering base in India while keeping the working day aligned to Gulf hours.",
     highlights: [

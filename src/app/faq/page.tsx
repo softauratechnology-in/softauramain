@@ -14,9 +14,9 @@ import { primaryCta, routes } from "@/constants/navigation";
 import { layout } from "@/styles/theme";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Common questions",
+  title: "Custom Software FAQ",
   description:
-    "Straight answers on custom ERP versus off-the-shelf, how long software takes to build, what it costs, data security, and who owns the code.",
+    "Straight answers on custom ERP versus off-the-shelf, how long software takes to build, what it costs, data security, and who owns the code. Answered plainly.",
   path: routes.faq,
 });
 

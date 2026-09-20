@@ -108,9 +108,12 @@ export default async function LocationPage(
               {location.highlights.map((highlight) => (
                 <RevealItem key={highlight.title} variant="scaleIn">
                   <Card variant="glass" className="h-full">
-                    <h2 className={cn(grotesk.h4, "text-pretty")}>
+                    {/* h3: inside the section headed by the h2 above. The
+                        "Areas we serve" card lower down keeps its h2 — it has
+                        no section heading of its own, so it is the heading. */}
+                    <h3 className={cn(grotesk.h4, "text-pretty")}>
                       {highlight.title}
-                    </h2>
+                    </h3>
                     <p className={cn(text.body, "mt-3 text-pretty")}>
                       {highlight.body}
                     </p>

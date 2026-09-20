@@ -91,9 +91,10 @@ export default function ServicesPage() {
                         size={24}
                         className="text-brand-soft"
                       />
-                      <h2 className={cn(grotesk.h4, "mt-5 text-pretty")}>
+                      {/* h3: inside the section headed by the h2 above. */}
+                      <h3 className={cn(grotesk.h4, "mt-5 text-pretty")}>
                         {page.title}
-                      </h2>
+                      </h3>
                       <p className={cn(text.body, "mt-3 text-pretty")}>
                         {page.summary}
                       </p>

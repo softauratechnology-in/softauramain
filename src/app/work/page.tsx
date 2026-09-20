@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { primaryCta, routes } from "@/constants/navigation";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Case studies",
+  title: "Software Development Case Studies",
   description:
     "Systems we have designed, built and handed over — including a school management ERP and a corporate web portal for a Dubai construction contractor.",
   path: routes.work,

@@ -24,7 +24,7 @@ import { articlePath, routes } from "@/constants/navigation";
  */
 
 export const metadata: Metadata = pageMetadata({
-  title: "Insights",
+  title: "Software Development Insights",
   description:
     "What custom software really costs, when to buy rather than build, and how to tell which you actually need. Written before you talk to a developer.",
   path: routes.insights,

@@ -32,9 +32,12 @@ export function BookingEmbed({ className }: { className?: string }) {
           <Icon name="calendar" size={18} />
         </span>
         <div>
-          <h3 className={text.h4}>
+          {/* h2, not h3. This card renders before any section heading on
+              /contact, so as an h3 it was the first heading after that page's
+              h1 — a skipped level. Size still comes from `text.h4`. */}
+          <h2 className={text.h4}>
             {bookingUrl ? "Book a time directly" : "Prefer to talk first?"}
-          </h3>
+          </h2>
           <p className="mt-2 text-sm text-pretty text-muted">
             {bookingUrl
               ? "Pick a slot that suits you — a 30-minute call, no preparation needed. Bring the problem, not a specification."

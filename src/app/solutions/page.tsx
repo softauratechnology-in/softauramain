@@ -90,9 +90,10 @@ export default function SolutionsPage() {
                         size={24}
                         className="text-brand-soft"
                       />
-                      <h2 className={cn(grotesk.h4, "mt-5 text-pretty")}>
+                      {/* h3: inside the section headed by the h2 above. */}
+                      <h3 className={cn(grotesk.h4, "mt-5 text-pretty")}>
                         {page.title}
-                      </h2>
+                      </h3>
                       <p className={cn(text.body, "mt-3 text-pretty")}>
                         {page.summary}
                       </p>
@@ -121,9 +122,9 @@ export default function SolutionsPage() {
                 <RevealItem key={location.id}>
                   <Link href={locationPath(location.id)} className="block h-full">
                     <Card interactive variant="glass" className="h-full">
-                      <h2 className={cn(grotesk.h4, "text-pretty")}>
+                      <h3 className={cn(grotesk.h4, "text-pretty")}>
                         Software development in {location.city}
-                      </h2>
+                      </h3>
                       <p className={cn(text.body, "mt-3 text-pretty")}>
                         {location.intro}
                       </p>

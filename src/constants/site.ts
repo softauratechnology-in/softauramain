@@ -25,7 +25,7 @@ export const site = {
      feeds the Organization JSON-LD and llms.txt, which is why it names what we
      build rather than describing a posture. */
   description:
-    "SoftAura Technology builds custom ERP systems, web applications, mobile apps and SaaS products for businesses across India and the UAE.",
+    "SoftAura Technology builds custom ERP systems, web applications, mobile apps and SaaS products for businesses across India and the UAE. Senior engineers only.",
   /**
    * Canonical origin. Overridden per-environment by `NEXT_PUBLIC_SITE_URL`;
    * the fallback keeps local builds and previews from emitting broken absolute
@@ -50,6 +50,21 @@ export const site = {
    */
   url:
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.softauratechnology.com",
+  /**
+   * How the company describes *itself* as an entity, for the `Organization`
+   * JSON-LD — as distinct from `description` above, which is the homepage meta
+   * description.
+   *
+   * They are deliberately different lengths and registers. A meta description
+   * is a sentence shown to a human deciding whether to click, and is judged on
+   * the 140–160 characters Google will render. An entity description is read by
+   * machines building a knowledge graph, where brevity and category terms
+   * matter more than persuasion.
+   *
+   * Both must stay true of the same company. If one is edited, read the other.
+   */
+  entityDescription:
+    "Enterprise product engineering agency specializing in custom SaaS, ERP systems, and web applications.",
   locale: "en_IN",
   /** Founded year, for the footer copyright range. */
   foundedYear: 2021,

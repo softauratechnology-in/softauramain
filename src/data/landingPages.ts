@@ -194,7 +194,7 @@ export const landingPages: LandingPage[] = [
     h1Accent: "outgrowing spreadsheets",
     metaTitle: "Web Application Development",
     metaDescription:
-      "Custom web application development in Chennai and Dubai. Secure browser-based systems with role-based logins, live data and reporting.",
+      "Custom web application development in Chennai and Dubai. Secure browser-based systems with role-based logins, live data and reporting. You own the code.",
     summary:
       "Software your team logs into and works in all day — records, approvals, reporting — reached from a browser, with no installation.",
     intro:
@@ -327,7 +327,7 @@ export const landingPages: LandingPage[] = [
     h1Accent: "that converts",
     metaTitle: "E-Commerce Website Development",
     metaDescription:
-      "E-commerce website development in Chennai and Dubai. Fast product pages, a checkout people finish, and stock your team can actually manage.",
+      "E-commerce website development in Chennai and Dubai. Fast product pages, a checkout people finish, and stock your team can actually manage. Fixed-price build.",
     summary:
       "Online stores that are quick to browse, simple to check out of, and straightforward for your team to run after handover.",
     intro:
@@ -388,7 +388,7 @@ export const landingPages: LandingPage[] = [
     h1Accent: "how you already work",
     metaTitle: "Custom ERP Software Development",
     metaDescription:
-      "Custom ERP software development in Chennai and Dubai. One system for orders, stock, finance and staff — built around how you already work.",
+      "Custom ERP software development in Chennai and Dubai. One system for orders, stock, finance and staff — built around how you already work. You own it.",
     summary:
       "One system replacing the spreadsheets, paper files and WhatsApp threads your organisation currently runs on.",
     intro:
@@ -465,7 +465,7 @@ export const landingPages: LandingPage[] = [
     h1Accent: "around your school",
     metaTitle: "School Management Software",
     metaDescription:
-      "Custom school management software and school ERP for schools in Chennai and the UAE. Admissions, attendance, fees, exams and parent access.",
+      "Custom school management software and school ERP for schools in Chennai and the UAE. Admissions, attendance, fees, exams and parent access. Fits your board.",
     summary:
       "Admissions, attendance, fees, exams and parent communication in one system — with a separate view for staff, management and parents.",
     intro:
@@ -538,7 +538,7 @@ export const landingPages: LandingPage[] = [
     h1Accent: "that stays accurate",
     metaTitle: "Custom Inventory Management Software",
     metaDescription:
-      "Custom inventory management software development in Chennai and Dubai. Multi-location stock, barcodes, purchase orders and reorder alerts.",
+      "Custom inventory management software development in Chennai and Dubai. Multi-location stock, barcodes, purchase orders and reorder alerts. Connects to Tally.",
     summary:
       "Know what you hold, where it is and what it is worth — across every location, without a monthly stock-take to find out.",
     intro:

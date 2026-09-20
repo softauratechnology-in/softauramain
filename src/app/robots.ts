@@ -41,8 +41,24 @@ const AI_CRAWLERS = [
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/" },
-      ...AI_CRAWLERS.map((userAgent) => ({ userAgent, allow: "/" })),
+      /*
+       * `disallow` is defensive rather than corrective: there are no `/api/`
+       * routes today, and the one Route Handler the site has — `/llms.txt` —
+       * exists precisely to be crawled. Declaring the prefix now means a future
+       * API endpoint is excluded from the moment it is added, instead of being
+       * indexed for however long it takes someone to notice.
+       *
+       * `/_next/` is left alone deliberately. Blocking it stops Google fetching
+       * the CSS and JS it needs to render the page, and a page it cannot render
+       * is a page it cannot judge — the single most common way a robots.txt
+       * makes rankings worse.
+       */
+      { userAgent: "*", allow: "/", disallow: ["/api/"] },
+      ...AI_CRAWLERS.map((userAgent) => ({
+        userAgent,
+        allow: "/",
+        disallow: ["/api/"],
+      })),
     ],
     sitemap: `${site.url}/sitemap.xml`,
     host: site.url,

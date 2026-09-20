@@ -13,6 +13,16 @@ export interface Project {
   /** Two-to-three sentences: the problem, then what was delivered. */
   description: string;
   /**
+   * Search-result description, 140–160 characters.
+   *
+   * Falls back to `summary` when absent. They are separate because they are
+   * read in different places: `summary` sits directly under the page title,
+   * where the title has already said what the project is, and can therefore be
+   * short. A search snippet has no such context and gets truncated at about
+   * 160, so anything under ~140 leaves rendered space unused.
+   */
+  metaDescription?: string;
+  /**
    * Domain and engagement tags. These describe *what the work was*, which is
    * known. Technology claims live in `stack` and are only populated once
    * confirmed — see the note at the bottom of this file.
@@ -72,6 +82,8 @@ export const projects: Project[] = [
       "A website for a dental practice built so a patient can read about a treatment, get a specific question answered and book an appointment without phoning during clinic hours. Thirteen treatment pages, online booking, aftercare guides and an AI assistant that handles the questions the front desk was fielding by phone.",
     summary:
       "A clinic site where patients research a treatment, ask an assistant and book — without phoning during opening hours.",
+    metaDescription:
+      "Case study: a dental clinic website with online booking, thirteen treatment pages and an AI assistant answering patient questions at any hour.",
     challenge: [
       "Patients wanting to know what a treatment involves, how long it takes or roughly what it costs had no way to find out other than calling.",
       "Booking depended on someone being free to answer the phone, during the hours the clinic is treating patients.",
@@ -120,6 +132,8 @@ export const projects: Project[] = [
       "A single browser-based system replacing the spreadsheets and paper records three separate school offices were running independently. Parents, teachers and school owners each get their own view of the same academic, attendance and fee records.",
     summary:
       "One system for three school offices that had been running on spreadsheets, paper files and phone calls.",
+    metaDescription:
+      "Case study: a custom school ERP replacing spreadsheets and paper across three offices — admissions, attendance, fees and a parent view in one system.",
     challenge: [
       "Three offices each kept their own records, so the same student could appear differently in each one and nobody could say which version was right.",
       "Fee collection was tracked by hand. Chasing an unpaid term meant cross-checking a spreadsheet against a receipt book.",
@@ -156,6 +170,8 @@ export const projects: Project[] = [
       "A corporate web presence for a Dubai construction contractor that needed to be credible to enterprise procurement teams, not just attractive. Capability, project history and company profile are structured so a prospective partner can qualify the firm in a single visit.",
     summary:
       "A web portal for a Dubai construction contractor, built to satisfy procurement teams rather than just look good.",
+    metaDescription:
+      "Case study: a corporate web portal for a Dubai contractor, structured so enterprise procurement teams can qualify the firm in a single visit.",
     challenge: [
       "Large contracts in the region are awarded after a procurement team has checked a firm can actually deliver at the required scale — and that check often starts with the website.",
       "The company's capability, completed projects and credentials existed, but were spread across documents rather than presented anywhere a prospective partner could find them.",
@@ -187,6 +203,8 @@ export const projects: Project[] = [
       "A marketing and enquiry site for a wedding and events venue. The space, amenities and availability are presented so couples and event organisers can assess fit quickly, with enquiry capture as the single conversion path.",
     summary:
       "A site for a wedding and events venue, built around one job: turning a browsing couple into an enquiry.",
+    metaDescription:
+      "Case study: a wedding and events venue website built around one job — letting a browsing couple assess the venue and enquire outside office hours.",
     challenge: [
       "Couples compare venues on photographs and practicalities — capacity, catering, parking — and leave immediately if those are hard to find.",
       "Enquiries were arriving across several channels with different details each time, so following them up was inconsistent.",
