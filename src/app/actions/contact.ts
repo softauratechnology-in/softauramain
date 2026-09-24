@@ -94,6 +94,21 @@ async function sendByEmail(
        to misconfigure SMTP. */
     secure: config.port === 465,
     auth: { user: config.user, pass: config.password },
+    /*
+     * Fail fast rather than hang.
+     *
+     * Serverless functions have a hard execution limit — 10 seconds by default
+     * on Vercel. Nodemailer's own defaults are far longer than that, so a
+     * host that accepts the TCP connection and then stops responding burns the
+     * whole budget and the function is killed with no error to log. The caller
+     * then reports a generic failure and nobody can tell why.
+     *
+     * Eight seconds total leaves room to log a real error inside the limit.
+     * Slow is indistinguishable from broken to the person waiting either way.
+     */
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 8000,
   });
 
   const rows = (Object.keys(FIELD_LABELS) as ContactField[])
@@ -169,8 +184,54 @@ async function deliverEnquiry(payload: Record<ContactField, string>): Promise<vo
   const port = Number(process.env.SMTP_PORT ?? 465);
 
   if (host && user && password && Number.isFinite(port)) {
-    await sendByEmail(payload, { host, port, user, password });
-    return;
+    try {
+      await sendByEmail(payload, { host, port, user, password });
+      return;
+    } catch (error) {
+      /*
+       * Re-thrown, but logged first with the fields that actually identify the
+       * fault. Nodemailer puts the useful part in `code`, `command` and
+       * `response` — "EAUTH / 535 authentication failed" and "ETIMEDOUT" are
+       * completely different problems that produce an identical message
+       * otherwise, and this is the only place the difference is visible.
+       *
+       * Host, port and user are logged; the password never is. Knowing the
+       * username reached the server is most of the diagnosis.
+       */
+      const smtp = error as {
+        code?: string;
+        command?: string;
+        response?: string;
+        message?: string;
+      };
+      console.error("[contact] SMTP send failed", {
+        host,
+        port,
+        user,
+        code: smtp.code,
+        command: smtp.command,
+        response: smtp.response,
+        message: smtp.message,
+      });
+      throw error;
+    }
+  }
+
+  /*
+   * Configured partially, which is its own failure and worth naming separately:
+   * three variables set and one missing looks identical to none set at all
+   * from the outside, and is a far more likely mistake.
+   */
+  if (host || user || password) {
+    console.error(
+      "[contact] SMTP is partially configured — every variable is required.",
+      {
+        SMTP_HOST: Boolean(host),
+        SMTP_PORT: Number.isFinite(port),
+        SMTP_USER: Boolean(user),
+        SMTP_PASSWORD: Boolean(password),
+      },
+    );
   }
 
   if (process.env.NODE_ENV !== "production") {
