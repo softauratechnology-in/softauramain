@@ -16,7 +16,6 @@ import { Accordion } from "@/components/ui/Accordion";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { ReviewsSection } from "@/sections/ReviewsSection";
 import { locations, getLocation, locationPhone } from "@/data/locations";
 import { landingPages } from "@/data/landingPages";
@@ -200,7 +199,6 @@ export default async function LocationPage(
           </Container>
         </section>
 
-        <CtaSection />
       </main>
     </>
   );

@@ -5,7 +5,6 @@ import { WhyUsSection } from "@/sections/WhyUsSection";
 import { WorkTeaser } from "@/sections/WorkTeaser";
 import { FaqTeaser } from "@/sections/FaqTeaser";
 import { ReviewsSection } from "@/sections/ReviewsSection";
-import { CtaSection } from "@/sections/CtaSection";
 import { Marquee } from "@/components/ui/Marquee";
 import { primaryServices } from "@/data/services";
 
@@ -45,7 +44,6 @@ export default function HomePage() {
       <WorkTeaser />
       <ReviewsSection />
       <FaqTeaser />
-      <CtaSection />
     </main>
   );
 }

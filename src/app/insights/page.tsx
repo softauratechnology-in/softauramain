@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { articlesByDate } from "@/data/articles";
 import { articlePath, routes } from "@/constants/navigation";
 
@@ -78,7 +77,6 @@ export default function InsightsPage() {
           </Container>
         </section>
 
-        <CtaSection />
       </main>
     </>
   );

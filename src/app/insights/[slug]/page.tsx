@@ -15,7 +15,6 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { articles, getArticle } from "@/data/articles";
 import { findLandingPage } from "@/data/landingPages";
 import { articlePath, landingPath, routes } from "@/constants/navigation";
@@ -176,7 +175,6 @@ export default async function ArticlePage(
           </section>
         ) : null}
 
-        <CtaSection />
       </main>
     </>
   );

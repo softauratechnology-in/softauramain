@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/pageMetadata";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { WorkSection } from "@/sections/WorkSection";
-import { CtaSection } from "@/sections/CtaSection";
 import { Button } from "@/components/ui/Button";
 import { primaryCta, routes } from "@/constants/navigation";
 
@@ -29,7 +28,6 @@ export default function WorkPage() {
       />
 
       <WorkSection />
-      <CtaSection />
     </main>
   );
 }

@@ -8,7 +8,6 @@ import { Accordion } from "@/components/ui/Accordion";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { faqGroups, faqItems } from "@/data/faq";
 import { primaryCta, routes } from "@/constants/navigation";
 import { layout } from "@/styles/theme";
@@ -79,7 +78,7 @@ export default function FaqPage() {
               of text with no way in; four tiles give the reader the shape of
               the page and a jump straight to the part they came for. Anchor
               links, so they work with JavaScript off and are shareable. */}
-          <RevealGroup className="mb-14 grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGroup className="mb-14 grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {faqGroups.map((group) => (
               <RevealItem key={group.id} variant="scaleIn" className="flex">
                 <a
@@ -130,7 +129,6 @@ export default function FaqPage() {
         </Container>
       </section>
 
-      <CtaSection />
     </main>
   );
 }

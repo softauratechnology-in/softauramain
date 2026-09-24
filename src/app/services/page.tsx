@@ -15,7 +15,6 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServicesSection } from "@/sections/ServicesSection";
 import { ProcessSection } from "@/sections/ProcessSection";
 import { TechnologySection } from "@/sections/TechnologySection";
-import { CtaSection } from "@/sections/CtaSection";
 import { Button } from "@/components/ui/Button";
 import { servicePages } from "@/data/landingPages";
 import { servicePath, primaryCta, routes, SECTION_IDS } from "@/constants/navigation";
@@ -113,7 +112,6 @@ export default function ServicesPage() {
         <ServicesSection />
         <ProcessSection />
         <TechnologySection />
-        <CtaSection />
       </main>
     </>
   );

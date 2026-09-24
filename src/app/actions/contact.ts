@@ -5,10 +5,9 @@ import {
   budgetOptions,
   timelineOptions,
   requirementOptions,
+  startingPointOptions,
   MAX_LENGTHS,
   MIN_MESSAGE_LENGTH,
-  type BudgetOption,
-  type TimelineOption,
   type ContactField,
   type ContactFormState,
 } from "@/constants/contactForm";
@@ -55,6 +54,7 @@ function readField(formData: FormData, field: ContactField): string {
 /** Human-readable labels for the email body, in the order they are asked. */
 const FIELD_LABELS: Record<ContactField, string> = {
   requirement: "Needs",
+  startingPoint: "Starting from",
   budget: "Budget",
   timeline: "Timeline",
   name: "Name",
@@ -195,6 +195,7 @@ export async function submitContactForm(
 ): Promise<ContactFormState> {
   const values: Record<ContactField, string> = {
     requirement: readField(formData, "requirement"),
+    startingPoint: readField(formData, "startingPoint"),
     budget: readField(formData, "budget"),
     timeline: readField(formData, "timeline"),
     name: readField(formData, "name"),
@@ -225,18 +226,25 @@ export async function submitContactForm(
     fieldErrors.requirement = "Please choose one of the listed options.";
   }
 
+  if (
+    values.startingPoint.length > 0 &&
+    !startingPointOptions.includes(values.startingPoint)
+  ) {
+    fieldErrors.startingPoint = "Please choose one of the listed options.";
+  }
+
   /* Optional, but if supplied must be one of ours — a free-text value here means
      the request did not come from our form. */
   if (
     values.budget.length > 0 &&
-    !budgetOptions.includes(values.budget as BudgetOption)
+    !budgetOptions.includes(values.budget)
   ) {
     fieldErrors.budget = "Please choose one of the listed ranges.";
   }
 
   if (
     values.timeline.length > 0 &&
-    !timelineOptions.includes(values.timeline as TimelineOption)
+    !timelineOptions.includes(values.timeline)
   ) {
     fieldErrors.timeline = "Please choose one of the listed options.";
   }

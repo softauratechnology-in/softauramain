@@ -17,6 +17,11 @@ import {
 /**
  * Site footer, with the closing CTA.
  *
+ * This is now the *only* closing CTA on the site. A per-page `CtaSection`
+ * used to render immediately above it on every route, which meant two asks
+ * stacked back to back — the second weakening the first. That section is gone;
+ * its one non-duplicated line ("No cost, no obligation") lives here now.
+ *
  * The oversized circular "Start a project" button is carried over from the demo's
  * design language — it is the single strongest conversion element on the page and
  * the visual signature of the layout, so it stays.
@@ -57,6 +62,17 @@ export function Footer() {
           >
             Start a project
           </Link>
+        </Reveal>
+
+        {/* Carried over from the page-level CTA section that used to sit
+            directly above this one. Everything else in that section was a
+            second copy of something already here or in the footer nav — but
+            this line was not, and it answers the most common reason someone
+            does not click a "book a call" button. */}
+        <Reveal delay={0.15}>
+          <p className="text-sm text-subtle">
+            No cost, no obligation. We reply {contact.responseTime}.
+          </p>
         </Reveal>
       </Container>
 

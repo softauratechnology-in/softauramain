@@ -10,7 +10,6 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 import { TagList } from "@/components/ui/Tag";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { projects, getProject } from "@/data/projects";
 import { landingPages } from "@/data/landingPages";
 import { JsonLd } from "@/components/JsonLd";
@@ -359,7 +358,6 @@ export default async function CaseStudyPage(props: PageProps<"/work/[slug]">) {
         </div>
       </Container>
 
-      <CtaSection />
     </main>
   );
 }

@@ -11,51 +11,55 @@ import { useFormStatus } from "react-dom";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { OptionCards } from "@/components/ui/OptionCards";
 import {
   Field,
   fieldControlProps,
   inputClass,
-  selectClass,
   textareaClass,
 } from "@/components/ui/Field";
 import { submitContactForm } from "@/app/actions/contact";
 import { useGreeting } from "@/components/greeting/GreetingProvider";
 import {
-  budgetOptions,
-  timelineOptions,
-  requirementOptions,
+  requirementChoices,
+  startingPointChoices,
+  timelineChoices,
+  budgetChoices,
   initialContactState,
   MAX_LENGTHS,
   MIN_MESSAGE_LENGTH,
+  TOTAL_STEPS,
 } from "@/constants/contactForm";
 
 /**
- * Contact form — two steps, one submission.
+ * Booking form — three steps, one submission.
  *
  * ## Why it is not a wizard
  *
- * Both steps render into the same `<form>` and the inactive one is *hidden*,
+ * Every step renders into the same `<form>` and the inactive ones are *hidden*,
  * never unmounted. So there is still exactly one POST to one Server Action,
  * validation stays in one place on the server, and nothing has to be carried
  * between requests.
  *
  * ## Why it still works with JavaScript off
  *
- * The step-hiding only switches on *after mount* — `enhanced` starts `false`, so
- * the server renders, and a browser without the bundle keeps, one long form with
- * every field visible and a working submit button. A visitor with JavaScript
- * gets the two-step version a moment later. A wizard that hides step two behind
- * a button with no JavaScript behind it is a form that cannot be submitted at
- * all, which is the failure this avoids.
+ * The step-hiding only switches on *after mount* — `enhanced` is false during
+ * SSR and hydration, so a browser without the bundle keeps one long form with
+ * every question visible and a working submit button. A wizard that hides the
+ * last step behind a button with no JavaScript behind it is a form that cannot
+ * be submitted at all, which is the failure this avoids.
  *
- * ## What changed and why
+ * ## Three steps, and what that costs
  *
- * The old form asked for a name, an email and at least twenty characters
- * describing the project before it would accept anything. That is a lot to ask
- * of someone who knows only that they want an ERP. Now the first question is
- * *what do you need*, answered by tapping one chip, and the written message is
- * optional — requirement, budget and timeline already say enough to reply
- * properly.
+ * This was two. Cards sell a choice far better than the plain pills they
+ * replaced — "Custom ERP Software" means little until it says "run the whole
+ * business from one system" underneath — but they are tall, and four card
+ * questions on one screen was three phone-screens of scrolling before the first
+ * button.
+ *
+ * The cost is real: every step is somewhere people leave, and the contact
+ * details are now two taps away rather than one. It is mitigated, not erased,
+ * by only step 1 being required — step 2 can be passed through in a single tap.
  *
  * `useActionState` holds the returned state across submits, which is how typed
  * values survive a validation failure instead of being wiped.
@@ -85,6 +89,8 @@ function SubmitButton() {
   );
 }
 
+type Step = 1 | 2 | 3;
+
 export function ContactForm() {
   const [state, formAction] = useActionState(submitContactForm, initialContactState);
   const { fieldErrors = {}, values = {} } = state;
@@ -95,11 +101,8 @@ export function ContactForm() {
    * `useSyncExternalStore` answers this without an effect: React calls the third
    * argument on the server and during hydration, and the second one on the
    * client thereafter. So this is `false` in the server-rendered HTML — where
-   * both steps are visible and the form submits without JavaScript — and `true`
-   * a moment after hydration, which is when the two-step behaviour switches on.
-   *
-   * The subscribe callback never fires; the value changes exactly once, when
-   * hydration completes.
+   * every step is visible and the form submits without JavaScript — and `true`
+   * a moment after hydration, which is when the stepping switches on.
    */
   const enhanced = useSyncExternalStore(
     () => () => {},
@@ -107,87 +110,95 @@ export function ContactForm() {
     () => false,
   );
 
-  const [step, setStep] = useState<1 | 2>(1);
-  const [requirement, setRequirement] = useState(values.requirement ?? "");
+  const [step, setStep] = useState<Step>(1);
   const [stepError, setStepError] = useState<string | null>(null);
 
-  const stepTwoRef = useRef<HTMLDivElement>(null);
+  /* One piece of state per card question. Controlled, because the card's
+     appearance depends on it and the DOM radio is visually hidden. */
+  const [requirement, setRequirement] = useState(values.requirement ?? "");
+  const [startingPoint, setStartingPoint] = useState(values.startingPoint ?? "");
+  const [timeline, setTimeline] = useState(values.timeline ?? "");
+  const [budget, setBudget] = useState(values.budget ?? "");
 
-  /*
-   * A server-side failure can belong to either step, and the user has to be
-   * looking at the step the error is on — otherwise it is announced against a
-   * control they cannot see.
-   *
-   * Adjusted during render rather than in an effect. This is React's documented
-   * pattern for reacting to a changed prop or prior state: it re-renders
-   * immediately, before anything is painted, where an effect would paint the
-   * wrong step first and then correct it.
-   */
   const { greet } = useGreeting();
+  const stepRef = useRef<HTMLDivElement>(null);
 
   /*
-   * Bumped every time an action result comes back, and used as the requirement
-   * fieldset's `key` so those radios remount.
+   * Bumped every time an action result comes back, and used as each card
+   * question's `key` so its radios remount.
    *
-   * React 19 resets the form after an action completes. For the text inputs
-   * that is harmless — reset restores them to `defaultValue`, which is the
-   * value the server just echoed back. The radios have no `defaultChecked`, so
-   * reset clears them in the DOM while this component's `requirement` state
-   * still says one is selected. React then re-renders, sees nothing changed,
-   * and leaves the DOM alone: the chip still looks selected, and the next
-   * submit sends no requirement at all.
+   * React 19 resets the form after an action completes. For the text inputs that
+   * is harmless — reset restores them to `defaultValue`, which is the value the
+   * server just echoed back. The radios have no `defaultChecked`, so reset
+   * clears them in the DOM while this component's state still says one is
+   * selected. React then re-renders, sees nothing changed, and leaves the DOM
+   * alone: the card still looks selected, and the next submit sends nothing.
    *
-   * Remounting is what makes React write `checked` back to the DOM. It costs a
-   * focus reset on a control the user is not looking at — they are on step two
-   * when this happens — which is a good trade for a field that silently
-   * emptied itself.
+   * This bug shipped once already on the requirement question and silently
+   * emptied it on every resubmit. All four questions are keyed now, not just the
+   * one that was caught.
    */
   const [generation, setGeneration] = useState(0);
 
+  /*
+   * A server-side failure can belong to any step, and the user has to be looking
+   * at the one the error is on — otherwise it is announced against a control
+   * they cannot see.
+   *
+   * Adjusted during render rather than in an effect. This is React's documented
+   * pattern for reacting to changed state: it re-renders immediately, before
+   * anything is painted, where an effect would paint the wrong step first and
+   * then correct it.
+   */
   const [seenState, setSeenState] = useState(state);
   if (state !== seenState) {
     setSeenState(state);
     setGeneration((value) => value + 1);
+
     if (state.status === "error") {
-      setStep(
-        fieldErrors.requirement || fieldErrors.budget || fieldErrors.timeline
-          ? 1
-          : 2,
-      );
+      if (fieldErrors.requirement) {
+        setStep(1);
+      } else if (
+        fieldErrors.startingPoint ||
+        fieldErrors.timeline ||
+        fieldErrors.budget
+      ) {
+        setStep(2);
+      } else {
+        setStep(3);
+      }
     }
   }
 
   /*
    * The thank-you, fired when the action comes back successful.
    *
-   * In an effect rather than during render, which is where it started: `greet`
-   * updates `GreetingProvider`'s state, and updating *another* component's
-   * state while this one renders is not allowed — React drops it. Adjusting
-   * this component's own `step` during render (above) is fine and is a
-   * documented pattern; reaching into a different component is not.
-   *
-   * `state` is a fresh object per action result, so this runs once per
-   * submission rather than on every re-render.
+   * In an effect rather than during render: `greet` updates
+   * `GreetingProvider`'s own state, and updating *another* component's state
+   * while this one renders is not allowed — React drops it. Adjusting this
+   * component's `step` during render (above) is fine and is a documented
+   * pattern; reaching into a different component is not.
    */
   useEffect(() => {
     if (state.status !== "success") return;
-    /* Named, because this is the one greeting that follows something the
-       visitor put real effort into. The success card says what happens next;
-       this says thank you, by name, the moment it lands. */
     greet("enquiry", state.values?.name);
   }, [state, greet]);
 
-  function goToStepTwo() {
-    if (!requirement) {
+  function goTo(next: Step) {
+    /* Only the first question is required, so this is the only gate. */
+    if (next > 1 && !requirement) {
       setStepError("Pick the closest match — we will sort out the detail.");
+      setStep(1);
       return;
     }
     setStepError(null);
-    setStep(2);
+    setStep(next);
     /* Move focus into the step that just appeared, or a keyboard and screen
        reader user is left at a button that has vanished. */
     window.requestAnimationFrame(() => {
-      stepTwoRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+      stepRef.current
+        ?.querySelector<HTMLElement>("input:not([type=hidden]), textarea")
+        ?.focus();
     });
   }
 
@@ -210,11 +221,10 @@ export function ContactForm() {
     );
   }
 
-  const showStepOne = !enhanced || step === 1;
-  const showStepTwo = !enhanced || step === 2;
+  const shows = (n: Step) => !enhanced || step === n;
 
   return (
-    <form action={formAction} noValidate className="flex flex-col gap-6">
+    <form action={formAction} noValidate className="flex flex-col gap-8">
       {/* Summary error. `role="alert"` is an assertive live region, so it is
           announced on appearance without stealing focus from the form. */}
       {state.status === "error" && state.message ? (
@@ -229,10 +239,10 @@ export function ContactForm() {
       {enhanced ? (
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold tracking-[0.14em] text-subtle uppercase">
-            Step {step} of 2
+            Step {step} of {TOTAL_STEPS}
           </span>
           <span aria-hidden className="flex flex-1 gap-1.5">
-            {[1, 2].map((n) => (
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((n) => (
               <span
                 key={n}
                 className={cn(
@@ -245,105 +255,95 @@ export function ContactForm() {
         </div>
       ) : null}
 
-      {/* ── Step 1 — what do you need ─────────────────────────────────────── */}
-      <div className={cn("flex flex-col gap-6", !showStepOne && "hidden")}>
-        <fieldset key={generation}>
-          <legend className="text-sm font-medium text-foreground">
-            What do you need?{" "}
-            <span className="text-error" aria-hidden>
-              *
-            </span>
-          </legend>
-          <p id="requirement-hint" className="mt-1.5 text-sm text-subtle">
-            Closest match is fine — we will work out the detail with you.
-          </p>
-
-          {/* Radios, not a select. Ten options a thumb can hit beats a dropdown
-              on a phone, and the whole point of this step is that it takes one
-              tap. Native radios keep it keyboard- and screen-reader-correct. */}
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            {requirementOptions.map((option) => (
-              <label
-                key={option}
-                className={cn(
-                  "cursor-pointer rounded-full border px-4 py-2.5 text-sm transition-colors duration-200",
-                  "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background",
-                  requirement === option
-                    ? "border-brand-strong bg-brand-strong text-white"
-                    : "border-border-subtle text-muted hover:border-border-strong hover:text-foreground",
-                )}
-              >
-                <input
-                  type="radio"
-                  name="requirement"
-                  value={option}
-                  checked={requirement === option}
-                  onChange={() => {
-                    setRequirement(option);
-                    setStepError(null);
-                  }}
-                  className="sr-only"
-                  aria-describedby="requirement-hint"
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-
-          {stepError || fieldErrors.requirement ? (
-            <p role="alert" className="mt-3 text-sm text-error">
-              {stepError ?? fieldErrors.requirement}
-            </p>
-          ) : null}
-        </fieldset>
-
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field htmlFor="budget" label="Indicative budget" error={fieldErrors.budget}>
-            <select
-              {...fieldControlProps("budget", fieldErrors.budget)}
-              name="budget"
-              defaultValue={values.budget ?? ""}
-              className={selectClass(fieldErrors.budget)}
-            >
-              <option value="">Not sure / prefer not to say</option>
-              {budgetOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          <Field htmlFor="timeline" label="When would you start?" error={fieldErrors.timeline}>
-            <select
-              {...fieldControlProps("timeline", fieldErrors.timeline)}
-              name="timeline"
-              defaultValue={values.timeline ?? ""}
-              className={selectClass(fieldErrors.timeline)}
-            >
-              <option value="">No fixed date</option>
-              {timelineOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
+      <div
+        ref={step === 1 ? stepRef : undefined}
+        className={cn(!shows(1) && "hidden")}
+      >
+        <OptionCards
+          key={`requirement-${generation}`}
+          name="requirement"
+          legend="What do you need built?"
+          hint="Closest match is fine — we will work out the detail with you."
+          choices={requirementChoices}
+          value={requirement}
+          onChange={(value) => {
+            setRequirement(value);
+            setStepError(null);
+          }}
+          required
+          error={stepError ?? fieldErrors.requirement ?? null}
+        />
 
         {enhanced ? (
-          <div>
-            <Button type="button" size="lg" icon="arrowRight" onClick={goToStepTwo}>
+          <div className="mt-8">
+            <Button
+              type="button"
+              size="lg"
+              icon="arrowRight"
+              onClick={() => goTo(2)}
+            >
               Continue
             </Button>
           </div>
         ) : null}
       </div>
 
-      {/* ── Step 2 — who you are ──────────────────────────────────────────── */}
       <div
-        ref={stepTwoRef}
-        className={cn("flex flex-col gap-6", !showStepTwo && "hidden")}
+        ref={step === 2 ? stepRef : undefined}
+        className={cn("flex flex-col gap-8", !shows(2) && "hidden")}
+      >
+        <OptionCards
+          key={`startingPoint-${generation}`}
+          name="startingPoint"
+          legend="Where are you starting from?"
+          hint="It changes what we ask you first, so it is worth a tap."
+          choices={startingPointChoices}
+          value={startingPoint}
+          onChange={setStartingPoint}
+          error={fieldErrors.startingPoint ?? null}
+        />
+
+        <OptionCards
+          key={`timeline-${generation}`}
+          name="timeline"
+          legend="When would you want to start?"
+          choices={timelineChoices}
+          value={timeline}
+          onChange={setTimeline}
+          error={fieldErrors.timeline ?? null}
+        />
+
+        <OptionCards
+          key={`budget-${generation}`}
+          name="budget"
+          legend="Roughly what budget do you have in mind?"
+          hint="A range is enough. If you do not know yet, say so — that is a normal answer."
+          choices={budgetChoices}
+          value={budget}
+          onChange={setBudget}
+          error={fieldErrors.budget ?? null}
+        />
+
+        {enhanced ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              size="lg"
+              icon="arrowRight"
+              onClick={() => goTo(3)}
+            >
+              Continue
+            </Button>
+            <Button type="button" variant="ghost" onClick={() => goTo(1)}>
+              Back
+            </Button>
+          </div>
+        ) : null}
+      </div>
+
+      <div
+        ref={step === 3 ? stepRef : undefined}
+        className={cn("flex flex-col gap-6", !shows(3) && "hidden")}
       >
         <div className="grid gap-6 sm:grid-cols-2">
           <Field htmlFor="name" label="Your name" required error={fieldErrors.name}>
@@ -425,7 +425,7 @@ export function ContactForm() {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => setStep(1)}
+              onClick={() => goTo(2)}
               className="sm:order-first"
             >
               Back

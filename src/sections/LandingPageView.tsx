@@ -10,7 +10,6 @@ import { Accordion } from "@/components/ui/Accordion";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { ReviewsSection } from "@/sections/ReviewsSection";
 import { getProject } from "@/data/projects";
 import { findLandingPage, type LandingPage } from "@/data/landingPages";
@@ -214,7 +213,6 @@ export function LandingPageView({ page }: LandingPageViewProps) {
         </section>
       ) : null}
 
-      <CtaSection />
     </main>
   );
 }

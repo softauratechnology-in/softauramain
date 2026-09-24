@@ -13,7 +13,6 @@ import { Icon } from "@/components/ui/Icon";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CtaSection } from "@/sections/CtaSection";
 import { solutionPages } from "@/data/landingPages";
 import { locations } from "@/data/locations";
 import {
@@ -136,7 +135,6 @@ export default function SolutionsPage() {
           </Container>
         </section>
 
-        <CtaSection />
       </main>
     </>
   );

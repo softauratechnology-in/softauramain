@@ -101,6 +101,21 @@ export interface LandingPage {
   metaDescription: string;
   /** One line, for cards and the hub grids. */
   summary: string;
+  /**
+   * The reason someone picks this on the booking form — outcome, not feature.
+   *
+   * Shorter and blunter than `summary`, because it is read on a card the
+   * visitor is deciding between nine others: eight or nine words, phrased as
+   * what they get rather than what we do. Lives here rather than in
+   * `contactForm.ts` so the picker and the page it leads to cannot describe the
+   * same service differently.
+   */
+  bookingBenefit: string;
+  /**
+   * Highlights this card on the booking form. Exactly one entry should carry
+   * it — a "recommended" badge on three options recommends nothing.
+   */
+  bookingFeatured?: boolean;
   /** The direct answer. See copy rule 1. */
   intro: string;
   icon: IconName;
@@ -130,6 +145,8 @@ export const landingPages: LandingPage[] = [
       "Website development for businesses in Chennai and Dubai. Fast, mobile-first sites built to be found in search and to turn visitors into enquiries.",
     summary:
       "A site that loads fast, reads well on a phone and is built to be found — rather than a template with your logo dropped into it.",
+    bookingBenefit: "A fast site built to be found in Google",
+    bookingFeatured: true,
     intro:
       "Website development is the work of designing, building and launching a site that your customers can find and use. We build sites from scratch rather than from a template, which matters for two reasons: a custom build loads in a fraction of the time a page-builder theme does, and search engines rank what loads quickly. The result is a site that brings in enquiries rather than one that simply exists.",
     icon: "browser",
@@ -197,6 +214,7 @@ export const landingPages: LandingPage[] = [
       "Custom web application development in Chennai and Dubai. Secure browser-based systems with role-based logins, live data and reporting. You own the code.",
     summary:
       "Software your team logs into and works in all day — records, approvals, reporting — reached from a browser, with no installation.",
+    bookingBenefit: "Replace the spreadsheet your team has outgrown",
     intro:
       "A web application is software your team logs into and works in, rather than a website they read. The difference that matters to you is data: a website presents fixed information, while a web application stores records, enforces who can see what, and changes as people use it. We build them for organisations that have outgrown shared spreadsheets but do not want the compromise of off-the-shelf software.",
     icon: "layers",
@@ -264,6 +282,7 @@ export const landingPages: LandingPage[] = [
       "Mobile app development in Chennai and Dubai. One codebase for iOS and Android, offline support, push notifications, and we handle both store submissions.",
     summary:
       "iPhone and Android apps from a single codebase, so a new feature reaches both at once instead of being budgeted twice.",
+    bookingBenefit: "One build, on both the App Store and Play Store",
     intro:
       "Mobile app development is building software that runs on a phone and is installed from the App Store or Play Store. We build both platforms from one shared codebase, which is the decision that most affects your budget: a feature is designed, built and tested once rather than twice, and iPhone and Android users get it on the same day. We also handle the store submissions, which is the part most first-time app owners underestimate.",
     icon: "device",
@@ -330,6 +349,7 @@ export const landingPages: LandingPage[] = [
       "E-commerce website development in Chennai and Dubai. Fast product pages, a checkout people finish, and stock your team can actually manage. Fixed-price build.",
     summary:
       "Online stores that are quick to browse, simple to check out of, and straightforward for your team to run after handover.",
+    bookingBenefit: "A store people actually finish checking out of",
     intro:
       "E-commerce development is building an online store that takes orders and payments. The part that decides whether it earns money is rarely the design — it is checkout completion and page speed, which is where most template stores quietly lose customers. We build stores that load fast, ask for the fewest possible details at checkout, and leave your team able to manage products and orders without needing us.",
     icon: "cart",
@@ -391,6 +411,7 @@ export const landingPages: LandingPage[] = [
       "Custom ERP software development in Chennai and Dubai. One system for orders, stock, finance and staff — built around how you already work. You own it.",
     summary:
       "One system replacing the spreadsheets, paper files and WhatsApp threads your organisation currently runs on.",
+    bookingBenefit: "Run the whole business from one system",
     intro:
       "ERP software brings the separate parts of a business — orders, stock, purchasing, finance, staff — into one system, so the same information does not have to be typed in three places. A custom ERP is built around the way your organisation already works, rather than requiring you to change your process to match the software. That is the entire trade-off against SAP, Oracle or Zoho: more to build up front, nothing to work around afterwards.",
     icon: "browser",
@@ -468,6 +489,7 @@ export const landingPages: LandingPage[] = [
       "Custom school management software and school ERP for schools in Chennai and the UAE. Admissions, attendance, fees, exams and parent access. Fits your board.",
     summary:
       "Admissions, attendance, fees, exams and parent communication in one system — with a separate view for staff, management and parents.",
+    bookingBenefit: "Admissions, attendance, fees and parents in one place",
     intro:
       "School management software, also called a school ERP, is one system covering admissions, student records, attendance, fee collection, examinations and communication with parents. We build these to fit the school rather than the other way round, which matters more in education than in most sectors: fee structures, grading systems and board requirements differ between schools, and a product built for a different board will fight you on every one of them. We have delivered this — the case study below is a working school system.",
     icon: "users",
@@ -541,6 +563,7 @@ export const landingPages: LandingPage[] = [
       "Custom inventory management software development in Chennai and Dubai. Multi-location stock, barcodes, purchase orders and reorder alerts. Connects to Tally.",
     summary:
       "Know what you hold, where it is and what it is worth — across every location, without a monthly stock-take to find out.",
+    bookingBenefit: "Know what you hold, where it is, what it is worth",
     intro:
       "Inventory management software tracks what stock you hold, where it is, and what it is worth, updating as goods move rather than at the next stock-take. We build custom systems for businesses whose stock does not fit a standard product — batch and expiry tracking, serial numbers, multiple warehouses, job-based consumption, or units that change between purchase and sale. If your requirements are conventional, Zoho Inventory or Tally will serve you well and we will say so.",
     icon: "database",
@@ -607,6 +630,7 @@ export const landingPages: LandingPage[] = [
       "Custom HR and people management software in Chennai and Dubai. Attendance, leave, payroll inputs, onboarding and appraisals — built to your policy.",
     summary:
       "Staff records, attendance, leave, payroll inputs and appraisals in one place — built around your policy rather than a template's.",
+    bookingBenefit: "Attendance, leave and payroll inputs, to your policy",
     intro:
       "People management software — often called an HRMS — holds staff records, attendance, leave, payroll inputs, onboarding and appraisals in one system. We build custom versions for organisations whose policies do not fit a standard product: shift patterns that change weekly, site-based attendance, contractor workforces, or leave and gratuity rules spanning both India and the UAE. Where a standard HRMS fits, it is cheaper and faster, and we will tell you that.",
     icon: "users",
@@ -673,6 +697,7 @@ export const landingPages: LandingPage[] = [
       "AI chatbot development in Chennai and Dubai. Assistants grounded in your own content that answer accurately, book appointments and hand over to a human.",
     summary:
       "An assistant on your site that answers the questions your team currently answers by phone — grounded in your own content, at any hour.",
+    bookingBenefit: "Answer customers at two in the morning",
     intro:
       "An AI chatbot answers your customers' questions on your website, at any hour, without anyone on your team typing a reply. The ones worth building are grounded in your own content — your services, your prices, your opening hours — so they answer from what is true about your business rather than improvising. We build them for organisations whose staff spend a real part of the day answering the same handful of questions by phone and WhatsApp.",
     icon: "sparkle",
